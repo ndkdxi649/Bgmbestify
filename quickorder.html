@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="kn" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestify Mobile Kolavi - Quick Order</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-short': 'bounce 1s infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', 'Noto Sans Kannada', sans-serif;
+            touch-action: manipulation;
+        }
+
+        /* Smooth Upload Progress Bar */
+        @keyframes progressAnim {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .uploading-bar {
+            animation: progressAnim 1.8s ease-in-out forwards;
+        }
+
+        /* Lightbox overlay */
+        #lightbox {
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-slate-900 dark:text-gray-100 min-h-screen transition-colors duration-200">
+
+    <!-- Top Header Navigation -->
+    <header class="bg-white dark:bg-slate-800 shadow-sm border-b border-gray-200 dark:border-slate-700 sticky top-0 z-40">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Brand Name & Logo -->
+            <div class="flex items-center space-x-2">
+                <div class="bg-gradient-to-tr from-brand-600 to-emerald-400 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xl shadow-md">
+                    B
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight text-gray-900 dark:text-white">ಬೆಸ್ಟಿಫೈ ಮೊಬೈಲ್</h1>
+                    <p class="text-xs text-brand-600 dark:text-brand-400 font-medium">ಕೊಳವಿ (Kolavi)</p>
+                </div>
+            </div>
+
+            <!-- Header Actions: Dark Mode & Go To Website Button -->
+            <div class="flex items-center space-x-2">
+                <!-- Theme Switcher -->
+                <button id="themeToggle" onclick="toggleTheme()" class="p-2 rounded-full bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-yellow-400 hover:bg-gray-200 dark:hover:bg-slate-600 transition" title="Toggle Theme">
+                    <i id="themeIcon" class="fas fa-moon text-lg"></i>
+                </button>
+
+                <!-- Go To Website Highlighted Button -->
+                <a href="#main-website" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-xs px-3 py-2 rounded-lg shadow-md hover:shadow-lg flex items-center space-x-1 transition transform active:scale-95 animate-pulse-slow">
+                    <span>ವೆಬ್‌ಸೈಟ್‌ಗೆ ಹೋಗಿ</span>
+                    <i class="fas fa-external-link-alt text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Mobile Container -->
+    <main class="max-w-md mx-auto px-4 py-4 space-y-5">
+
+        <!-- Top Shop Banner Section -->
+        <div class="relative rounded-2xl overflow-hidden shadow-lg bg-slate-800 border-2 border-brand-500/30">
+            <!-- Shop Image Frame -->
+            <div class="relative h-44 sm:h-48 w-full bg-slate-900">
+                <img id="shopBannerImg" src="https://images.unsplash.com/photo-1556742049-0a670f4a4591?q=80&w=800&auto=format&fit=crop" alt="Bestify Mobile Kolavi Shop Banner" class="w-full h-full object-cover opacity-90">
+                <!-- Image Overlay Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                
+                <!-- Online / Shop Open Badge -->
+                <div class="absolute top-3 left-3 bg-emerald-500/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center space-x-1.5 shadow-md backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                    <span>ಅಂಗಡಿ ತೆರೆದಿದೆ / SHOP OPEN</span>
+                </div>
+            </div>
+
+            <!-- Banner Headline Banner Content -->
+            <div class="p-3 bg-slate-900 text-white border-t border-slate-800">
+                <h2 class="text-base font-extrabold text-amber-400 flex items-center space-x-1.5">
+                    <i class="fas fa-bolt text-amber-400"></i>
+                    <span>ತ್ವರಿತ ಆರ್ಡರ್ - ನಿಮ್ಮ ಮನೆ ಬಾಗಿಲಿಗೆ ಮೊಬೈಲ್ ವಸ್ತುಗಳು!</span>
+                </h2>
+                <p class="text-xs text-gray-300 mt-1">
+                    ನಿಮಗೆ ಬೇಕಾದ ಮೊಬೈಲ್ ಕವರ್, ಗ್ಲಾಸ್, ಚಾರ್ಜರ್ ಅಥವಾ ಇತರೆ ವಸ್ತುಗಳ ಫೋಟೋ ಹಾಕಿ ತಕ್ಷಣ ಆರ್ಡರ್ ಮಾಡಿ.
+                </p>
+            </div>
+        </div>
+
+        <!-- 3 High-Trust Points Badges -->
+        <div class="grid grid-cols-3 gap-2">
+            <div class="bg-white dark:bg-slate-800 p-2.5 rounded-xl text-center shadow-sm border border-emerald-200 dark:border-emerald-800/40">
+                <i class="fas fa-shield-alt text-emerald-600 dark:text-emerald-400 text-lg mb-1 block"></i>
+                <span class="text-xs font-bold text-gray-800 dark:text-gray-200">100% ನಂಬಿಕೆ</span>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-2.5 rounded-xl text-center shadow-sm border border-blue-200 dark:border-blue-800/40">
+                <i class="fas fa-store text-blue-600 dark:text-blue-400 text-lg mb-1 block"></i>
+                <span class="text-xs font-bold text-gray-800 dark:text-gray-200">ಸ್ಥಳೀಯ ಅಂಗಡಿ - ಕೊಳವಿ</span>
+            </div>
+            <div class="bg-white dark:bg-slate-800 p-2.5 rounded-xl text-center shadow-sm border border-amber-200 dark:border-amber-800/40">
+                <i class="fas fa-shipping-fast text-amber-600 dark:text-amber-400 text-lg mb-1 block"></i>
+                <span class="text-xs font-bold text-gray-800 dark:text-gray-200">ವೇಗದ ಡೆಲಿವರಿ</span>
+            </div>
+        </div>
+
+        <!-- ORDER FORM CONTAINER -->
+        <form id="quickOrderForm" onsubmit="handleFormSubmit(event)" class="space-y-5">
+
+            <!-- SECTION 1: PHOTO UPLOAD -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-200 dark:border-slate-700">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center space-x-2">
+                        <span class="bg-brand-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                        <span>ಫೋಟೋ ಇದ್ದರೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</span>
+                    </h3>
+                    <span id="photoCountBadge" class="text-xs text-gray-500 dark:text-gray-400 font-medium bg-gray-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
+                        0 Photos
+                    </span>
+                </div>
+
+                <!-- Hidden Native File Input -->
+                <input type="file" id="photoInput" accept="image/*" multiple onchange="handleFileSelect(event)" class="hidden">
+
+                <!-- Primary Photo Upload Trigger Box -->
+                <div onclick="triggerPhotoSelect()" class="border-2 border-dashed border-gray-300 dark:border-slate-600 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-5 text-center cursor-pointer bg-gray-50 dark:bg-slate-900/50 hover:bg-brand-50/30 transition group">
+                    <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-brand-100 dark:bg-slate-800 text-brand-600 dark:text-brand-400 flex items-center justify-center group-hover:scale-110 transition">
+                        <i class="fas fa-camera text-xl"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-brand-700 dark:text-brand-400">
+                        ಫೋಟೋ ಆಯ್ಕೆ ಮಾಡಲು ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Camera / Gallery ತೆರೆಯುತ್ತದೆ
+                    </p>
+                </div>
+
+                <!-- Live Upload Progress Animation Box (Hidden initially) -->
+                <div id="uploadProgressContainer" class="hidden mt-3 p-3 bg-brand-50 dark:bg-slate-900 rounded-xl border border-brand-200 dark:border-brand-900/50">
+                    <div class="flex items-center justify-between text-xs font-semibold text-brand-800 dark:text-brand-300 mb-1">
+                        <span class="flex items-center space-x-1">
+                            <i class="fas fa-spinner fa-spin text-brand-600"></i>
+                            <span>ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ...</span>
+                        </span>
+                        <span id="uploadPercentText">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                        <div id="uploadProgressBar" class="bg-brand-600 h-full w-0 transition-all duration-200"></div>
+                    </div>
+                </div>
+
+                <!-- Uploaded Thumbnails Preview Grid -->
+                <div id="photosGrid" class="grid grid-cols-3 gap-2 mt-3 hidden">
+                    <!-- Dynamic Thumbnails inserted via JavaScript -->
+                </div>
+
+                <!-- Add More Photo Button (Appears after 1st photo) -->
+                <button type="button" id="addMorePhotoBtn" onclick="triggerPhotoSelect()" class="hidden w-full mt-3 py-2 px-3 border border-dashed border-brand-500 dark:border-brand-400 text-brand-700 dark:text-brand-300 rounded-xl text-xs font-semibold bg-brand-50/50 dark:bg-slate-800 hover:bg-brand-100/50 flex items-center justify-center space-x-1 transition">
+                    <i class="fas fa-plus-circle text-brand-600"></i>
+                    <span>+ ಇನ್ನೊಂದು ಫೋಟೋ ಸೇರಿಸಿ</span>
+                </button>
+            </div>
+
+            <!-- SECTION 2: CUSTOMER DETAILS FORM -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-gray-200 dark:border-slate-700 space-y-4">
+                <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-700 pb-2">
+                    <h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center space-x-2">
+                        <span class="bg-brand-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                        <span>ನಿಮ್ಮ ವಿವರಗಳನ್ನು ಬರೆಯಿರಿ</span>
+                    </h3>
+                    <span class="text-[11px] text-red-500 font-semibold">* ಖಡ್ಡಾಯ / Required</span>
+                </div>
+
+                <!-- Field 1: What Product Required? -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-800 dark:text-gray-200 mb-1">
+                        ಏನು ಬೇಕು? / ವಸ್ತುವಿನ ವಿವರ <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="productDetails" required rows="2" 
+                        placeholder="ಉದಾ: Samsung A12 Cover, Fast Charger, Tempered Glass..."
+                        class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition placeholder-gray-400 dark:placeholder-gray-500"></textarea>
+                </div>
+
+                <!-- Field 2: Name -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-800 dark:text-gray-200 mb-1">
+                        ನಿಮ್ಮ ಹೆಸರು <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="customerName" required
+                        placeholder="ನಿಮ್ಮ ಹೆಸರು ಬರೆಯಿರಿ"
+                        class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition placeholder-gray-400 dark:placeholder-gray-500">
+                </div>
+
+                <!-- Field 3: Mobile Number -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-800 dark:text-gray-200 mb-1">
+                        ಮೊಬೈಲ್ ನಂಬರ್ <span class="text-red-500">*</span>
+                    </label>
+                    <input type="tel" id="customerPhone" required pattern="[0-9]{10}" maxlength="10"
+                        placeholder="10 ಅಂಕಿಯ ನಂಬರ್ ಹಾಕಿ"
+                        class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition placeholder-gray-400 dark:placeholder-gray-500">
+                </div>
+
+                <!-- Field 4: Village / Town -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-800 dark:text-gray-200 mb-1">
+                        ನಿಮ್ಮ ಊರು / ಗ್ರಾಮ <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="customerVillage" required
+                        placeholder="ಉದಾ: ಕೊಳವಿ, ಕಣಗಾಲ, ಬೆಳಗಾವಿ..."
+                        class="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition placeholder-gray-400 dark:placeholder-gray-500">
+                </div>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-700 hover:to-emerald-700 text-white font-extrabold text-base py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition flex items-center justify-center space-x-2">
+                <i class="fas fa-check-circle text-lg"></i>
+                <span>ಆರ್ಡರ್ ಮಾಡಿ / ORDER NOW</span>
+            </button>
+
+        </form>
+
+        <!-- Footer Notice -->
+        <footer class="text-center text-xs text-gray-500 dark:text-gray-400 py-3">
+            <p>ಬೆಸ್ಟಿಫೈ ಮೊಬೈಲ್ ಶಾಪ್ - ಕೊಳವಿ (Kolavi)</p>
+            <p class="mt-0.5">ನಿಮ್ಮ ನಂಬಿಕೆಗೆ ಸದಾ ಸಿದ್ಧ 🛍️</p>
+        </footer>
+
+    </main>
+
+    <!-- FULLSCREEN PHOTO LIGHTBOX PREVIEW -->
+    <div id="lightbox" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4">
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white text-2xl bg-slate-800/80 w-10 h-10 rounded-full flex items-center justify-center border border-slate-600">
+            <i class="fas fa-times"></i>
+        </button>
+        <img id="lightboxImg" src="" alt="Full Preview" class="max-w-full max-h-[85vh] rounded-lg object-contain">
+    </div>
+
+    <!-- ORDER SUCCESS CONFIRMATION MODAL -->
+    <div id="successModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border border-brand-500/30 transform transition-all scale-95 opacity-0" id="modalCard">
+            <!-- Checkmark Animation Circle -->
+            <div class="w-16 h-16 bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl shadow-inner">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h3 class="text-xl font-black text-gray-900 dark:text-white">ಆರ್ಡರ್ ಸ್ವೀಕರಿಸಲಾಗಿದೆ!</h3>
+            <p class="text-xs text-emerald-600 dark:text-emerald-400 font-bold mt-1">Order Successfully Submitted</p>
+            
+            <div class="my-4 p-3 bg-gray-50 dark:bg-slate-900 rounded-2xl text-left text-xs space-y-1.5 border border-gray-200 dark:border-slate-700">
+                <p><strong class="text-gray-600 dark:text-gray-400">Order ID:</strong> <span id="resOrderId" class="font-mono text-brand-600 font-bold">#BMK-1001</span></p>
+                <p><strong class="text-gray-600 dark:text-gray-400">ಹೆಸರು:</strong> <span id="resName" class="text-gray-800 dark:text-gray-200"></span></p>
+                <p><strong class="text-gray-600 dark:text-gray-400">ಫೋನ್:</strong> <span id="resPhone" class="text-gray-800 dark:text-gray-200"></span></p>
+                <p><strong class="text-gray-600 dark:text-gray-400">ಊರು:</strong> <span id="resVillage" class="text-gray-800 dark:text-gray-200"></span></p>
+            </div>
+
+            <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed mb-5">
+                ನಾವು ನಿಮ್ಮ ಆರ್ಡರ್ ಪರಿಶೀಲಿಸಿ ಶೀಘ್ರದಲ್ಲೇ ನಿಮಗೆ ಕರೆ ಅಥವಾ ಮೆಸೇಜ್ ಮಾಡುತ್ತೇವೆ. ಧನ್ಯವಾದಗಳು!
+            </p>
+
+            <button onclick="closeSuccessModal()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl shadow-md transition">
+                ಸರಿ / OK
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Array to store uploaded photo Data URLs
+        let uploadedPhotos = [];
+
+        // Dark/Light Theme Switch
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                icon.className = 'fas fa-moon text-lg text-gray-600';
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                icon.className = 'fas fa-sun text-lg text-yellow-400';
+            }
+        }
+
+        // Trigger native device camera/gallery picker
+        function triggerPhotoSelect() {
+            document.getElementById('photoInput').click();
+        }
+
+        // Handle file selection and simulated smooth upload progress
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            const progressContainer = document.getElementById('uploadProgressContainer');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const percentText = document.getElementById('uploadPercentText');
+
+            progressContainer.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            percentText.innerText = '0%';
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 20;
+                progressBar.style.width = progress + '%';
+                percentText.innerText = progress + '%';
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressContainer.classList.add('hidden');
+                        processFiles(files);
+                    }, 300);
+                }
+            }, 100);
+        }
+
+        // Process selected files into local data URLs
+        function processFiles(files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedPhotos.push(e.target.result);
+                    renderPhotos();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Render photo thumbnails in grid
+        function renderPhotos() {
+            const grid = document.getElementById('photosGrid');
+            const badge = document.getElementById('photoCountBadge');
+            const addMoreBtn = document.getElementById('addMorePhotoBtn');
+
+            badge.innerText = `${uploadedPhotos.length} Photo${uploadedPhotos.length > 1 ? 's' : ''}`;
+
+            if (uploadedPhotos.length > 0) {
+                grid.classList.remove('hidden');
+                addMoreBtn.classList.remove('hidden');
+                
+                grid.innerHTML = uploadedPhotos.map((src, idx) => `
+                    <div class="relative group aspect-square rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 bg-slate-900 shadow-sm">
+                        <img src="${src}" onclick="openLightbox('${src}')" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition">
+                        <button type="button" onclick="removePhoto(${idx})" class="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                grid.classList.add('hidden');
+                addMoreBtn.classList.add('hidden');
+                grid.innerHTML = '';
+            }
+        }
+
+        // Remove photo from array
+        function removePhoto(index) {
+            uploadedPhotos.splice(index, 1);
+            renderPhotos();
+        }
+
+        // Lightbox functions
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.add('hidden');
+        }
+
+        // Form Submit Handler
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            const village = document.getElementById('customerVillage').value.trim();
+            const details = document.getElementById('productDetails').value.trim();
+
+            const orderId = '#BMK-' + Math.floor(1000 + Math.random() * 9000);
+
+            document.getElementById('resOrderId').innerText = orderId;
+            document.getElementById('resName').innerText = name;
+            document.getElementById('resPhone').innerText = phone;
+            document.getElementById('resVillage').innerText = village;
+
+            // Show Confirmation Modal
+            const modal = document.getElementById('successModal');
+            const card = document.getElementById('modalCard');
+            modal.classList.remove('hidden');
+            
+            setTimeout(() => {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            // Reset Form after submit
+            document.getElementById('quickOrderForm').reset();
+            uploadedPhotos = [];
+            renderPhotos();
+        }
+
+        // Close Confirmation Modal
+        function closeSuccessModal() {
+            const modal = document.getElementById('successModal');
+            const card = document.getElementById('modalCard');
+            
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+    </script>
+</body>
+</html>

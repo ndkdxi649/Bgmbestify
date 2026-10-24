@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestify Mobile Kolavi - Cart & Direct Checkout</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Poppins', 'Noto Sans Kannada', sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            touch-action: manipulation;
+        }
+
+        .page-step {
+            transition: all 0.25s ease-in-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex justify-center bg-slate-100 p-0 sm:p-4">
+
+    <!-- Mobile Screen Frame -->
+    <div class="bg-[#f4f6f9] w-full max-w-md min-h-screen sm:rounded-3xl shadow-xl overflow-hidden flex flex-col justify-between relative border border-gray-200 pb-20">
+        
+        <!-- Header -->
+        <div class="bg-white p-3.5 border-b border-gray-200 sticky top-0 z-30 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <button onclick="goBack()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200">
+                    <i class="fas fa-arrow-left text-sm"></i>
+                </button>
+                <div>
+                    <div class="flex items-center space-x-1.5">
+                        <h1 class="text-sm font-extrabold text-gray-900" id="headerTitle">ನನ್ನ ಕಾರ್ಟ್ <span class="text-xs font-normal text-gray-500">(My Cart)</span></h1>
+                        <span class="bg-red-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full" id="itemBadge">3</span>
+                    </div>
+                    <p class="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Bestify Mobile ಕೊಳವಿ - Open Now
+                    </p>
+                </div>
+            </div>
+            <button id="clearCartBtn" onclick="clearCart()" class="text-[11px] font-semibold text-gray-500 flex items-center gap-1 hover:text-red-500">
+                <i class="far fa-trash-alt"></i> ಖಾಲಿ ಮಾಡಿ
+            </button>
+        </div>
+
+        <!-- STEP 1: CART PAGE -->
+        <div id="cartStep" class="page-step p-3.5 space-y-3.5 overflow-y-auto">
+            
+            <!-- FREE DELIVERY PROGRESS BAR CARD -->
+            <div class="bg-white p-3 rounded-2xl border border-emerald-100 shadow-sm space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold text-gray-800">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <span>ಉಚಿತ ಕೊಳವಿ ಹೋಮ್ ಡೆಲಿವರಿ ಪಡೆಯಿರಿ!</span>
+                    </div>
+                    <span class="text-emerald-600 text-[11px]" id="deliveryPercentText">86%</span>
+                </div>
+                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div id="deliveryProgressBar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 86%;"></div>
+                </div>
+                <p class="text-[10px] text-gray-500 font-semibold text-center" id="deliveryNoticeText">
+                    ಇನ್ನೂ <span class="text-emerald-600 font-bold">₹203</span> ಖರೀದಿಸಿ ಉಚಿತ ಡೆಲಿವರಿ ಪಡೆಯಿರಿ
+                </p>
+            </div>
+
+            <div class="flex justify-between items-center px-1">
+                <span class="text-xs font-extrabold text-gray-800 uppercase tracking-wide">ಆಯ್ಕೆಮಾಡಿದ ವಸ್ತುಗಳು (Cart Items)</span>
+                <span class="text-[10px] font-bold text-red-600">100% Original Products</span>
+            </div>
+
+            <!-- PRODUCT ITEMS LIST -->
+            <div class="space-y-2.5" id="cartList">
+                
+                <!-- Product 1 -->
+                <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between" id="prod-1">
+                    <div class="relative w-16 h-16 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center text-white text-[10px] font-bold">
+                        <span class="absolute top-0 left-0 bg-red-600 text-white text-[8px] font-bold px-1 rounded-br">50% OFF</span>
+                        Temper Glass
+                    </div>
+                    <div class="flex-1 px-3">
+                        <h3 class="text-xs font-bold text-gray-900">iPhone 13 Matte Glass Temper</h3>
+                        <p class="text-[10px] text-gray-400 font-medium">iPhone 13 - Full Glue Matte</p>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <span class="text-xs font-extrabold text-gray-900">₹299</span>
+                            <span class="text-[10px] text-gray-400 line-through">₹599</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end space-y-2">
+                        <button onclick="deleteProduct('prod-1')" class="text-gray-300 hover:text-red-500 text-xs">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <div class="flex items-center bg-gray-100 rounded-lg px-2 py-0.5 space-x-2">
+                            <button onclick="changeQty('q1', -1)" class="text-xs font-bold text-gray-600">-</button>
+                            <span id="q1" class="text-xs font-bold text-gray-900">1</span>
+                            <button onclick="changeQty('q1', 1)" class="text-xs font-bold text-gray-600">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between" id="prod-2">
+                    <div class="relative w-16 h-16 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center text-white text-[10px] font-bold">
+                        <span class="absolute top-0 left-0 bg-red-600 text-white text-[8px] font-bold px-1 rounded-br">20% OFF</span>
+                        Neckband
+                    </div>
+                    <div class="flex-1 px-3">
+                        <h3 class="text-xs font-bold text-gray-900">Realme Wireless Neckband</h3>
+                        <p class="text-[10px] text-gray-400 font-medium">Bass Boost Black - 20 hrs</p>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <span class="text-xs font-extrabold text-gray-900">₹899</span>
+                            <span class="text-[10px] text-gray-400 line-through">₹1100</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end space-y-2">
+                        <button onclick="deleteProduct('prod-2')" class="text-gray-300 hover:text-red-500 text-xs">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <div class="flex items-center bg-gray-100 rounded-lg px-2 py-0.5 space-x-2">
+                            <button onclick="changeQty('q2', -1)" class="text-xs font-bold text-gray-600">-</button>
+                            <span id="q2" class="text-xs font-bold text-gray-900">1</span>
+                            <button onclick="changeQty('q2', 1)" class="text-xs font-bold text-gray-600">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between" id="prod-3">
+                    <div class="relative w-16 h-16 bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center text-white text-[10px] font-bold">
+                        <span class="absolute top-0 left-0 bg-red-600 text-white text-[8px] font-bold px-1 rounded-br">50% OFF</span>
+                        Type-C Cable
+                    </div>
+                    <div class="flex-1 px-3">
+                        <h3 class="text-xs font-bold text-gray-900">Fast Charging Type-C Cable</h3>
+                        <p class="text-[10px] text-gray-400 font-medium">65W Dash Charge 1 Meter</p>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <span class="text-xs font-extrabold text-gray-900">₹99</span>
+                            <span class="text-[10px] text-gray-400 line-through">₹199</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end space-y-2">
+                        <button onclick="deleteProduct('prod-3')" class="text-gray-300 hover:text-red-500 text-xs">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <div class="flex items-center bg-gray-100 rounded-lg px-2 py-0.5 space-x-2">
+                            <button onclick="changeQty('q3', -1)" class="text-xs font-bold text-gray-600">-</button>
+                            <span id="q3" class="text-xs font-bold text-gray-900">1</span>
+                            <button onclick="changeQty('q3', 1)" class="text-xs font-bold text-gray-600">+</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- COUPONS SECTION -->
+            <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-gray-800 flex items-center gap-1.5">
+                        <i class="fas fa-ticket-alt text-red-500"></i> ಕೂಪನ್ ಮತ್ತು ರಿಯಾಯಿತಿ (Coupons)
+                    </span>
+                    <span class="text-[10px] text-gray-400 font-bold" id="appliedCouponText">ಯಾವುದೂ ಇಲ್ಲ</span>
+                </div>
+                <div class="flex space-x-2">
+                    <input type="text" id="couponInput" placeholder="ಕೂಪನ್ ಕೋಡ್ ಹಾಕಿ (E.G. KOLAVI50)" class="flex-1 text-xs p-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white outline-none font-semibold uppercase">
+                    <button onclick="applyCoupon()" class="bg-slate-900 text-white font-bold text-xs px-4 rounded-xl hover:bg-black">Apply</button>
+                </div>
+                <div class="flex space-x-2 pt-1 overflow-x-auto">
+                    <button onclick="usePresetCoupon('KOLAVI50', 50)" class="bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl text-left flex-shrink-0">
+                        <span class="block text-[10px] font-extrabold text-emerald-800">KOLAVI50</span>
+                        <span class="block text-[9px] text-emerald-600 font-bold">ಕೊಲಾವಿ ವಿಶೇಷ ರಿಯಾಯಿತಿ ₹50 SAVE</span>
+                    </button>
+                    <button onclick="usePresetCoupon('BESTIFY100', 100)" class="bg-red-50 border border-red-200 px-2.5 py-1 rounded-xl text-left flex-shrink-0">
+                        <span class="block text-[10px] font-extrabold text-red-800">BESTIFY100</span>
+                        <span class="block text-[9px] text-red-600 font-bold">₹999 ಕ್ಕಿಂತ ಹೆಚ್ಚು ಖರೀದಿಗೆ ₹100 SAVE</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- BILL BREAKDOWN -->
+            <div class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm space-y-2 text-xs">
+                <h4 class="font-extrabold text-gray-900 border-b border-gray-100 pb-2">ಖರೀದಿ ವಿವರಗಳು (BILL BREAKDOWN)</h4>
+                <div class="flex justify-between text-gray-600">
+                    <span>ಒಟ್ಟು ಬೆಲೆ (Items MRP Total)</span>
+                    <span class="font-bold text-gray-800" id="mrpTotalText">₹1997</span>
+                </div>
+                <div class="flex justify-between text-emerald-600 font-medium">
+                    <span>ಉತ್ಪನ್ನ ರಿಯಾಯಿತಿ (Product Discount)</span>
+                    <span class="font-bold" id="productDiscountText">-₹700</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                    <span>ಡೆಲಿವರಿ ಶುಲ್ಕ (Delivery Charge)</span>
+                    <span class="font-extrabold text-emerald-600" id="deliveryChargeText">ಉಚಿತ (FREE)</span>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                    <div>
+                        <span class="block font-black text-gray-900 text-xs">ಒಟ್ಟು ನೀಡಬೇಕಾದ ಹಣ</span>
+                        <span class="text-base font-extrabold text-gray-900" id="grandTotalText">₹1297</span>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-center">
+                        <span class="block text-[9px] font-bold text-emerald-700">ನಿಮ್ಮ ಉಳಿತಾಯ (SAVINGS)</span>
+                        <span class="text-xs font-black text-emerald-700" id="totalSavingsText">₹740</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAYMENT OPTIONS -->
+            <div class="bg-white p-3.5 rounded-2xl border border-gray-100 shadow-sm space-y-2 text-xs">
+                <h4 class="font-extrabold text-gray-900">ಪಾವತಿ ವಿಧಾನ (PAYMENT OPTION)</h4>
+                <div class="space-y-2">
+                    <label class="border border-gray-200 p-2.5 rounded-xl flex items-center justify-between cursor-pointer bg-gray-50/50">
+                        <div class="flex items-center space-x-2.5">
+                            <input type="radio" name="payOption" value="COD" checked class="text-red-600 focus:ring-red-500">
+                            <div>
+                                <span class="block font-bold text-gray-900">ಕ್ಯಾಶ್ ಆನ್ ಡೆಲಿವರಿ (Cash on Delivery)</span>
+                                <span class="block text-[10px] text-gray-500">ಡೆಲಿವರಿ ಸಿಕ್ಕ ನಂತರ ಹಣ ಕೊಡಿ</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-truck-loading text-gray-400"></i>
+                    </label>
+
+                    <label class="border border-gray-200 p-2.5 rounded-xl flex items-center justify-between cursor-pointer bg-gray-50/50">
+                        <div class="flex items-center space-x-2.5">
+                            <input type="radio" name="payOption" value="UPI" class="text-red-600 focus:ring-red-500">
+                            <div>
+                                <span class="block font-bold text-gray-900">UPI (PhonePe / Google Pay / Paytm)</span>
+                                <span class="block text-[10px] text-gray-500">ಆನ್‌ಲೈನ್ ಪಾವತಿ</span>
+                            </div>
+                        </div>
+                        <i class="fab fa-google-pay text-gray-400 text-base"></i>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- STEP 2: CHECKOUT PAGE (DESIGNS & ADDRESS FORM) -->
+        <div id="checkoutStep" class="page-step p-3.5 space-y-4 hidden overflow-y-auto">
+            <form id="checkoutForm" onsubmit="submitDirectOrder(event)" class="space-y-4">
+                
+                <!-- Customer Details Card -->
+                <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+                    <h3 class="text-xs font-extrabold text-gray-900 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
+                        <i class="fas fa-user-circle text-red-600"></i> 1. ಗ್ರಾಹಕರ ವಿವರ (Customer Info)
+                    </h3>
+                    <div class="space-y-2.5">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-700 mb-1">ಪೂರ್ಣ ಹೆಸರು (Full Name) *</label>
+                            <input type="text" id="custName" required placeholder="ಉದಾ: ರಮೇಶ್ ಕೊಳವಿ" class="w-full text-xs p-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-red-600 outline-none font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-700 mb-1">ಮೊಬೈಲ್ ನಂಬರ್ (Phone Number) *</label>
+                            <input type="tel" id="custPhone" required pattern="[0-9]{10}" maxlength="10" placeholder="9111111111" class="w-full text-xs p-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-red-600 outline-none font-semibold">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Address Card -->
+                <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+                    <h3 class="text-xs font-extrabold text-gray-900 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
+                        <i class="fas fa-map-marked-alt text-red-600"></i> 2. ಡೆಲಿವರಿ ವಿಳಾಸ (Delivery Address)
+                    </h3>
+                    <div class="space-y-2.5">
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-700 mb-1">ನಿಮ್ಮ ಗ್ರಾಮ / ಊರು (Select Village) *</label>
+                            <select id="custVillage" required class="w-full text-xs p-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-red-600 outline-none font-bold text-gray-800">
+                                <option value="Kolavi">ಕೊಳವಿ (Kolavi Village - Fast Express)</option>
+                                <option value="Kanagaon">ಕಣಗಾಂವ್ (Kanagaon)</option>
+                                <option value="Gokak">ಗೋಕಾಕ್ (Gokak)</option>
+                                <option value="Other">ಇತರ ಹತ್ತಿರದ ಗ್ರಾಮ (Other Local Area)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-gray-700 mb-1">ಮನೆ ಸಂಖ್ಯೆ / ಹತ್ತಿರದ ಗುರುತು (Landmark / Address) *</label>
+                            <input type="text" id="custAddress" required placeholder="ಉದಾ: ಬಸ್ ಸ್ಟ್ಯಾಂಡ್ ಹತ್ತಿರ, ಮನೆ ಸಂಖ್ಯೆ 42" class="w-full text-xs p-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-1 focus:ring-red-600 outline-none font-semibold">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Bill Confirmation Card -->
+                <div class="bg-slate-900 text-white p-4 rounded-2xl shadow-sm space-y-2 text-xs">
+                    <div class="flex justify-between text-gray-300">
+                        <span>ಡೆಲಿವರಿ ಶುಲ್ಕ (Delivery):</span>
+                        <span class="font-bold text-emerald-400">FREE</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-black pt-2 border-t border-slate-800 text-white">
+                        <span>ಒಟ್ಟು ಪಾವತಿಸಬೇಕಾದ ಮೊತ್ತ:</span>
+                        <span class="text-red-500 font-extrabold" id="checkoutFinalTotal">₹1297</span>
+                    </div>
+                </div>
+
+                <!-- Submit Direct Order Button -->
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs py-3.5 px-4 rounded-2xl shadow-lg flex items-center justify-center space-x-2 transition active:scale-95">
+                    <i class="fas fa-check-circle text-base"></i>
+                    <span>ಆರ್ಡರ್ ಕನ್ಫರ್ಮ್ ಮಾಡಿ (Confirm & Place Order)</span>
+                </button>
+
+            </form>
+        </div>
+
+        <!-- STICKY BOTTOM CHECKOUT BUTTON (STEP 1) -->
+        <div id="cartFooter" class="fixed bottom-0 max-w-md w-full bg-white p-3 border-t border-gray-200 shadow-2xl flex items-center justify-between z-30">
+            <div>
+                <span class="block text-[10px] font-bold text-gray-500">ಒಟ್ಟು ಮೊತ್ತ</span>
+                <span class="text-lg font-black text-gray-900" id="bottomTotalText">₹1297</span>
+            </div>
+            <button onclick="goToCheckout()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs py-3.5 px-6 rounded-2xl shadow-lg flex items-center space-x-2 transition active:scale-95">
+                <span>ಆರ್ಡರ್ ಮಾಡಿ (Proceed to Checkout)</span>
+                <i class="fas fa-arrow-right text-xs"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- DIRECT IN-APP ORDER SUCCESS MODAL -->
+    <div id="orderSuccessModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl border border-emerald-100 animate-pop space-y-3">
+            
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <div>
+                <h3 class="text-lg font-extrabold text-gray-900">ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ!</h3>
+                <p class="text-xs text-emerald-600 font-bold mt-0.5">Order Placed Successfully</p>
+            </div>
+            
+            <div class="p-3 bg-gray-50 rounded-2xl text-left border border-gray-200 space-y-1.5 text-xs">
+                <div class="flex justify-between border-b border-gray-200 pb-1">
+                    <span class="text-gray-500">Order ID:</span>
+                    <span class="font-mono font-bold text-gray-800" id="successOrderId">#BMK-9281</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">ಗ್ರಾಹಕರು:</span>
+                    <span class="font-bold text-gray-800" id="successName">Ramesh</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">ಗ್ರಾಮ:</span>
+                    <span class="font-bold text-gray-800" id="successVillage">Kolavi</span>
+                </div>
+                <div class="flex justify-between border-t border-gray-200 pt-1">
+                    <span class="text-gray-500">ಒಟ್ಟು ಮೊತ್ತ:</span>
+                    <span class="font-bold text-red-600" id="successAmount">₹1297</span>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-gray-500 font-medium">
+                ನಿಮ್ಮ ಆರ್ಡರ್ ಬೆಸ್ಟಿಫೈ ಮೊಬೈಲ್ ಕೊಳವಿ ಅಂಗಡಿಯಲ್ಲಿ ಸ್ವೀಕರಿಸಲಾಗಿದೆ.
+            </p>
+
+            <button onclick="resetApp()" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-3 text-xs rounded-2xl shadow-md transition active:scale-95">
+                ಅಂಗಡಿ ಮುಖಪುಟಕ್ಕೆ ಹೋಗಿ (Go to Shop)
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let currentStep = 1;
+        let grandTotal = 1297;
+        let couponDiscount = 0;
+
+        function changeQty(qId, change) {
+            const span = document.getElementById(qId);
+            let val = parseInt(span.innerText) + change;
+            if (val < 1) val = 1;
+            span.innerText = val;
+            recalculateBill();
+        }
+
+        function deleteProduct(pId) {
+            const el = document.getElementById(pId);
+            if(el) el.remove();
+            recalculateBill();
+        }
+
+        function recalculateBill() {
+            const q1 = parseInt(document.getElementById('q1')?.innerText || 0);
+            const q2 = parseInt(document.getElementById('q2')?.innerText || 0);
+            const q3 = parseInt(document.getElementById('q3')?.innerText || 0);
+
+            const itemsTotal = (q1 * 299) + (q2 * 899) + (q3 * 99);
+            grandTotal = itemsTotal - couponDiscount;
+
+            document.getElementById('grandTotalText').innerText = '₹' + grandTotal;
+            document.getElementById('bottomTotalText').innerText = '₹' + grandTotal;
+            document.getElementById('checkoutFinalTotal').innerText = '₹' + grandTotal;
+
+            const remainingForFree = 1500 - grandTotal;
+            if (remainingForFree <= 0) {
+                document.getElementById('deliveryProgressBar').style.width = '100%';
+                document.getElementById('deliveryPercentText').innerText = '100%';
+                document.getElementById('deliveryNoticeText').innerHTML = '<span class="text-emerald-600 font-bold">ಅಭಿನಂದನೆಗಳು! ನಿಮಗೆ ಉಚಿತ ಡೆಲಿವರಿ ಸಿಕ್ಕಿದೆ 🎉</span>';
+            } else {
+                const percent = Math.min(100, Math.max(10, Math.floor((grandTotal / 1500) * 100)));
+                document.getElementById('deliveryProgressBar').style.width = percent + '%';
+                document.getElementById('deliveryPercentText').innerText = percent + '%';
+                document.getElementById('deliveryNoticeText').innerHTML = `ಇನ್ನೂ <span class="text-emerald-600 font-bold">₹${remainingForFree}</span> ಖರೀದಿಸಿ ಉಚಿತ ಡೆಲಿವರಿ ಪಡೆಯಿರಿ`;
+            }
+        }
+
+        function usePresetCoupon(code, discount) {
+            couponDiscount = discount;
+            document.getElementById('couponInput').value = code;
+            document.getElementById('appliedCouponText').innerText = 'Saved ₹' + discount;
+            document.getElementById('appliedCouponText').className = 'text-[10px] text-emerald-600 font-bold';
+            recalculateBill();
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById('couponInput').value.trim().toUpperCase();
+            if (code === 'KOLAVI50') {
+                usePresetCoupon('KOLAVI50', 50);
+            } else if (code === 'BESTIFY100') {
+                usePresetCoupon('BESTIFY100', 100);
+            } else {
+                alert('ಅಸಿಂಧು ಕೂಪನ್ ಕೋಡ್!');
+            }
+        }
+
+        function goToCheckout() {
+            currentStep = 2;
+            document.getElementById('cartStep').classList.add('hidden');
+            document.getElementById('cartFooter').classList.add('hidden');
+            document.getElementById('clearCartBtn').classList.add('hidden');
+            document.getElementById('checkoutStep').classList.remove('hidden');
+            document.getElementById('headerTitle').innerHTML = 'ಆರ್ಡರ್ ಚೆಕ್‌ಔಟ್ <span class="text-xs font-normal text-gray-500">(Checkout)</span>';
+        }
+
+        function goBack() {
+            if (currentStep === 2) {
+                currentStep = 1;
+                document.getElementById('checkoutStep').classList.add('hidden');
+                document.getElementById('cartStep').classList.remove('hidden');
+                document.getElementById('cartFooter').classList.remove('hidden');
+                document.getElementById('clearCartBtn').classList.remove('hidden');
+                document.getElementById('headerTitle').innerHTML = 'ನನ್ನ ಕಾರ್ಟ್ <span class="text-xs font-normal text-gray-500">(My Cart)</span>';
+            } else {
+                alert('ಹಿಂತಿರುಗಲಾಗುತ್ತಿದೆ...');
+            }
+        }
+
+        function submitDirectOrder(event) {
+            event.preventDefault();
+            const name = document.getElementById('custName').value.trim();
+            const village = document.getElementById('custVillage').value;
+            
+            const randomId = '#BMK-' + Math.floor(1000 + Math.random() * 9000);
+            
+            document.getElementById('successOrderId').innerText = randomId;
+            document.getElementById('successName').innerText = name;
+            document.getElementById('successVillage').innerText = village;
+            document.getElementById('successAmount').innerText = '₹' + grandTotal;
+            
+            document.getElementById('orderSuccessModal').classList.remove('hidden');
+        }
+
+        function resetApp() {
+            document.getElementById('orderSuccessModal').classList.add('hidden');
+            goBack();
+        }
+
+        function clearCart() {
+            document.getElementById('cartList').innerHTML = '<p class="text-center text-xs font-semibold text-gray-400 py-6">ನಿಮ್ಮ ಕಾರ್ಟ್ ಖಾಲಿಯಾಗಿದೆ!</p>';
+            grandTotal = 0;
+            recalculateBill();
+        }
+    </script>
+</body>
+</html>
+

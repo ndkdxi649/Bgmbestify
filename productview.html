@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestify Mobile - Product Details</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Mobile Screen Container */
+        .app-container {
+            width: 100%;
+            max-width: 412px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        /* Top Loader Progress Bar */
+        .top-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, #1a73e8, #16a34a);
+            z-index: 1000;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .top-loader.loading {
+            width: 85%;
+        }
+
+        .top-loader.finish {
+            width: 100%;
+            opacity: 0;
+            transition: width 0.1s ease, opacity 0.3s ease 0.2s;
+        }
+
+        /* Header Styles */
+        .app-header {
+            padding: 12px 16px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            font-size: 1.1rem;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cart-icon-container {
+            position: relative;
+            font-size: 1.25rem;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background-color: #e53935;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 50%;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 90px;
+            scroll-behavior: smooth;
+        }
+
+        /* Meesho Style Slide-In Page Animation */
+        .page-slide-forward {
+            animation: meeshoSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .page-slide-backward {
+            animation: meeshoSlideOut 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes meeshoSlideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0.5;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes meeshoSlideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0.5;
+            }
+        }
+
+        /* Product Main Image Box */
+        .product-image-container {
+            position: relative;
+            width: 100%;
+            height: 360px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .product-main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .img-side-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .circle-btn {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .circle-btn:active { transform: scale(0.9); }
+        .wishlist-btn { color: #e53935; }
+        .share-btn { color: #1a73e8; }
+
+        /* Thumbnail Gallery */
+        .thumbnail-gallery {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .thumbnail-gallery::-webkit-scrollbar { display: none; }
+
+        .thumb-card {
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
+            border: 2px solid #cbd5e1;
+            overflow: hidden;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .thumb-card.active, .thumb-card:hover {
+            border-color: #1a73e8;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(26,115,232,0.2);
+        }
+
+        .thumb-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Color Selection Section */
+        .color-selection-section {
+            margin-bottom: 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .color-heading {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .color-img-grid {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .color-img-grid::-webkit-scrollbar { display: none; }
+
+        .color-img-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            cursor: pointer;
+            flex-shrink: 0;
+            width: 78px;
+            transition: all 0.2s;
+        }
+
+        .color-img-card.active {
+            border-color: #1a73e8;
+            background-color: #eff6ff;
+            box-shadow: 0 4px 10px rgba(26,115,232,0.2);
+            transform: scale(1.03);
+        }
+
+        .color-img-thumb {
+            width: 52px;
+            height: 52px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        .color-title-text {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .color-price-text {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #16a34a;
+            margin-top: 2px;
+        }
+
+        /* Store Brand & Title */
+        .brand-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1a73e8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        /* Price Box */
+        .price-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .current-price {
+            font-size: 1.45rem;
+            font-weight: bold;
+            color: #16a34a;
+        }
+
+        .original-price {
+            font-size: 1rem;
+            color: #94a3b8;
+            text-decoration: line-through;
+        }
+
+        .discount-badge {
+            background-color: #16a34a;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .stock-status {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #16a34a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Policy Box */
+        .policy-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .policy-card {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .policy-card:hover {
+            border-color: #1a73e8;
+            background-color: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .policy-card i {
+            font-size: 1.1rem;
+            color: #1a73e8;
+            margin-bottom: 4px;
+        }
+
+        .policy-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .policy-sub {
+            font-size: 0.65rem;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* SECTION 1: Product Details Box */
+        .trust-details-box {
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .details-heading {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .details-title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-arrow-icon {
+            font-size: 1.1rem;
+            color: #1a73e8;
+            transition: transform 0.3s ease;
+        }
+
+        .details-collapsible-content {
+            display: none;
+            margin-top: 12px;
+            border-top: 2px solid #f1f5f9;
+            padding-top: 12px;
+        }
+
+        .trust-details-box.open .details-collapsible-content { display: block; }
+        .trust-details-box.open .toggle-arrow-icon { transform: rotate(180deg); }
+
+        .gift-highlight-banner {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 1px dashed #1a73e8;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1e40af;
+            font-size: 0.83rem;
+            font-weight: 700;
+        }
+
+        .trust-features-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.83rem;
+            color: #334155;
+            line-height: 1.4;
+        }
+
+        .trust-item i {
+            font-size: 0.95rem;
+            color: #16a34a;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* SECTION 2: Total Comments */
+        .reviews-section {
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .reviews-title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .reviews-dropdown-arrow {
+            font-size: 1.1rem;
+            color: #1a73e8;
+            transition: transform 0.3s ease;
+        }
+
+        .top-changing-review {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-top: 10px;
+            font-size: 0.78rem;
+            color: #1e40af;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .top-changing-review i { color: #f59e0b; }
+
+        .reviews-body {
+            display: none;
+            margin-top: 12px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
+        }
+
+        .reviews-section.open .reviews-body { display: block; }
+        .reviews-section.open .reviews-dropdown-arrow { transform: rotate(180deg); }
+
+        .review-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .reviewer-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #1a73e8;
+        }
+
+        .reviewer-meta { flex: 1; }
+
+        .reviewer-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .reviewer-name i { color: #16a34a; font-size: 0.75rem; }
+        .user-stars { color: #f59e0b; font-size: 0.7rem; }
+        .review-text { font-size: 0.82rem; color: #475569; line-height: 1.4; }
+
+        /* SECTION 3: Have 30+ People Section */
+        .custom-faq-wrapper {
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .custom-faq-header {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .custom-faq-title-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .faq-arrow-icon {
+            font-size: 1.1rem;
+            color: #1a73e8;
+            transition: transform 0.3s ease;
+        }
+
+        .custom-faq-body {
+            display: none;
+            margin-top: 12px;
+            border-top: 2px solid #f1f5f9;
+            padding-top: 12px;
+        }
+
+        .custom-faq-wrapper.open .custom-faq-body { display: block; }
+        .custom-faq-wrapper.open .faq-arrow-icon { transform: rotate(180deg); }
+
+        .faq-item {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .faq-question {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.4;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer { display: block; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); }
+
+        .other-question-btn {
+            display: block;
+            width: 100%;
+            margin-top: 14px;
+            background: #f0f7ff;
+            color: #1a73e8;
+            border: 1.5px dashed #1a73e8;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .ask-faq-box {
+            display: none;
+            margin-top: 14px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .faq-textarea {
+            width: 100%;
+            height: 70px;
+            padding: 8px 10px;
+            font-size: 0.82rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            margin-bottom: 8px;
+            background: #fff;
+            resize: none;
+        }
+
+        .faq-input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            margin-bottom: 8px;
+            background: #fff;
+        }
+
+        .faq-submit-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* RELATED PRODUCTS SECTION */
+        .preview-products-container {
+            margin-top: 10px;
+            margin-bottom: 25px;
+            padding: 0 2px;
+        }
+
+        .preview-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .preview-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .preview-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: #cbd5e1;
+        }
+
+        .preview-img-box {
+            position: relative;
+            width: 100%;
+            height: 150px;
+            background-color: #f8fafc;
+            overflow: hidden;
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background-color: #ef4444;
+            color: #ffffff;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .preview-card-body {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .preview-item-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.25;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-item-brand {
+            font-size: 0.7rem;
+            color: #64748b;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        .preview-price-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .preview-old-price {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            text-decoration: line-through;
+            font-weight: 500;
+        }
+
+        .preview-new-price {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #16a34a;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 360px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a73e8;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-body {
+            font-size: 0.85rem;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .modal-close-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Bottom Footer Buttons */
+        .action-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            padding: 12px 16px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+        }
+
+        .btn-cart {
+            flex: 1;
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-buy {
+            flex: 1;
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Top Loader Progress Bar -->
+        <div class="top-loader" id="topLoader"></div>
+
+        <!-- Top Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <span class="back-btn" onclick="goBackPage()"><i class="fa-solid fa-arrow-left"></i></span>
+                <span class="header-title">Bestify</span>
+            </div>
+            <div class="cart-icon-container">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-badge">6</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainScrollContent">
+            <!-- Product Main Image Box -->
+            <div class="product-image-container">
+                <div class="img-side-actions">
+                    <div class="circle-btn wishlist-btn" title="Add to Wishlist"><i class="fa-solid fa-heart"></i></div>
+                    <div class="circle-btn share-btn" onclick="shareProduct()" title="Share Product"><i class="fa-solid fa-share-nodes"></i></div>
+                </div>
+                <img id="mainProductImg" src="810043.jpg" alt="Mobile Display Offer" class="product-main-img">
+            </div>
+
+            <!-- Thumbnail Gallery -->
+            <div class="thumbnail-gallery">
+                <div class="thumb-card active" onclick="changeImage('810043.jpg', this)">
+                    <img id="thumb1" src="810043.jpg" alt="Thumb 1">
+                </div>
+                <div class="thumb-card" onclick="changeImage('https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400', this)">
+                    <img id="thumb2" src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400" alt="Thumb 2">
+                </div>
+                <div class="thumb-card" onclick="changeImage('https://images.unsplash.com/photo-1556740758-90de374c12ad?w=400', this)">
+                    <img id="thumb3" src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=400" alt="Thumb 3">
+                </div>
+                <div class="thumb-card" onclick="changeImage('https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=400', this)">
+                    <img id="thumb4" src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=400" alt="Thumb 4">
+                </div>
+            </div>
+
+            <!-- Product Details Info -->
+            <div class="brand-name" id="mainBrandName">BESTIFY MOBILE</div>
+            <h1 class="product-title" id="mainProductTitle">Mobile display hakisidare offer</h1>
+
+            <!-- Image-Based Color Selection Section -->
+            <div class="color-selection-section">
+                <div class="color-heading">
+                    <i class="fa-solid fa-palette" style="color: #1a73e8;"></i> Select Color Variant:
+                </div>
+                <div class="color-img-grid">
+                    <div class="color-img-card active" onclick="selectVariant('Jet Black', '₹1499', '₹1799', '810043.jpg', this)">
+                        <img src="810043.jpg" alt="Black" class="color-img-thumb">
+                        <span class="color-title-text">Jet Black</span>
+                        <span class="color-price-text">₹1499</span>
+                    </div>
+
+                    <div class="color-img-card" onclick="selectVariant('Royal Blue', '₹1000', '₹1399', 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400', this)">
+                        <img src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400" alt="Blue" class="color-img-thumb">
+                        <span class="color-title-text">Blue</span>
+                        <span class="color-price-text">₹1000</span>
+                    </div>
+
+                    <div class="color-img-card" onclick="selectVariant('Sunset Red', '₹488', '₹799', 'https://images.unsplash.com/photo-1556740758-90de374c12ad?w=400', this)">
+                        <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=400" alt="Red" class="color-img-thumb">
+                        <span class="color-title-text">Red</span>
+                        <span class="color-price-text">₹488</span>
+                    </div>
+
+                    <div class="color-img-card" onclick="selectVariant('Gold Edition', '₹200', '₹499', 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=400', this)">
+                        <img src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=400" alt="Gold" class="color-img-thumb">
+                        <span class="color-title-text">Gold</span>
+                        <span class="color-price-text">₹200</span>
+                    </div>
+
+                    <div class="color-img-card" onclick="selectVariant('Silver Edition', '₹140', '₹350', '810043.jpg', this)">
+                        <img src="810043.jpg" alt="Silver" class="color-img-thumb">
+                        <span class="color-title-text">Silver</span>
+                        <span class="color-price-text">₹140</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Row -->
+            <div class="price-row">
+                <span class="current-price" id="displayPrice">₹1499</span>
+                <span class="original-price" id="displayOriginalPrice">₹1799</span>
+                <span class="discount-badge" id="displayDiscount">Special Offer</span>
+            </div>
+
+            <div class="stock-status">
+                <i class="fa-solid fa-circle-check"></i> In Stock (Fast Delivery Available)
+            </div>
+
+            <!-- Policy Box -->
+            <div class="policy-container">
+                <div class="policy-card" onclick="showModal('guarantee')">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <div class="policy-title">3 Months</div>
+                    <div class="policy-sub">Guarantee <i class="fa-solid fa-chevron-right" style="font-size:0.5rem"></i></div>
+                </div>
+                <div class="policy-card" onclick="showModal('return')">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <div class="policy-title">7 Days Return</div>
+                    <div class="policy-sub">Only Exchange <i class="fa-solid fa-chevron-right" style="font-size:0.5rem"></i></div>
+                </div>
+                <div class="policy-card" onclick="showModal('charges')">
+                    <i class="fa-solid fa-truck-ramp-box"></i>
+                    <div class="policy-title">₹50 Charges</div>
+                    <div class="policy-sub">Return Charge <i class="fa-solid fa-chevron-right" style="font-size:0.5rem"></i></div>
+                </div>
+            </div>
+
+            <!-- SECTION 1: Product Details Collapsible Box -->
+            <div class="trust-details-box" id="detailsBox">
+                <div class="details-heading" onclick="toggleProductDetails()">
+                    <div class="details-title-left">
+                        <i class="fa-solid fa-circle-info" style="color: #1a73e8;"></i> 
+                        <span>ವಿವರಣೆ (Product Details)</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down toggle-arrow-icon"></i>
+                </div>
+
+                <div class="details-collapsible-content">
+                    <div class="gift-highlight-banner">
+                        <i class="fa-solid fa-battery-full" style="font-size: 1.3rem; color:#1a73e8;"></i>
+                        <span>10000 mAh 👌 2 Mobile Full Charge Āguttave!</span>
+                    </div>
+
+                    <div class="trust-features-grid">
+                        <div class="trust-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><strong>Free Gifts Offer:</strong> Display replacement māḍisidare Free Gifts (Watch, Wireless Neckband, Bracelet athava Cable Protector) sērde irette!</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><strong>100% Quality Assurance:</strong> Best quality Original Combo Display with high touch response and HD clear colors.</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><strong>Express Fast Service:</strong> Urgent replacement done perfectly in saving your valuable time.</span>
+                        </div>
+                        <div class="trust-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span><strong>Expert Technicians:</strong> Fitted safely by Bestify Mobile certified experts for complete peace of mind.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Total Comments -->
+            <div class="reviews-section" id="reviewsSection">
+                <div class="reviews-header" onclick="toggleReviewsSection()">
+                    <div class="reviews-title-left">
+                        <i class="fa-solid fa-comments" style="color:#1a73e8;"></i>
+                        <span>Total Comments (<span id="totalCommentsCount">6</span>)</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down reviews-dropdown-arrow"></i>
+                </div>
+
+                <div class="top-changing-review" id="topChangingReview">
+                    <i class="fa-solid fa-star"></i>
+                    <span id="tickerText">Anand K: "Best price and 3 months guarantee. Very..."</span>
+                </div>
+
+                <div class="reviews-body">
+                    <div class="review-card">
+                        <div class="reviewer-info">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100" alt="User" class="reviewer-avatar">
+                            <div class="reviewer-meta">
+                                <span class="reviewer-name">Anand K <i class="fa-solid fa-circle-check" title="Verified"></i></span>
+                                <div class="user-stars">⭐⭐⭐⭐⭐</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Best price and 3 months guarantee. Very trustworthy store."</p>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="reviewer-info">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" alt="User" class="reviewer-avatar">
+                            <div class="reviewer-meta">
+                                <span class="reviewer-name">Mahesh yaragatti <i class="fa-solid fa-circle-check" title="Verified"></i></span>
+                                <div class="user-stars">⭐⭐⭐⭐⭐</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Wow super 💥 power full power bank tq umesh your website is help full..."</p>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="reviewer-info">
+                            <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100" alt="User" class="reviewer-avatar">
+                            <div class="reviewer-meta">
+                                <span class="reviewer-name">Praveen Kumar <i class="fa-solid fa-circle-check" title="Verified"></i></span>
+                                <div class="user-stars">⭐⭐⭐⭐⭐</div>
+                            </div>
+                        </div>
+                        <p class="review-text">"Display change madide, free neckband gift sikktu. Very fast service!"</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Have 30+ People Section -->
+            <div class="custom-faq-wrapper" id="customFaqWrapper">
+                <div class="custom-faq-header" onclick="toggleCustomFaqBox()">
+                    <div class="custom-faq-title-left">
+                        <i class="fa-solid fa-fire" style="color:#e53935;"></i>
+                        <span>Have 30+ people gnodabeku e product!</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down faq-arrow-icon"></i>
+                </div>
+
+                <div class="custom-faq-body">
+                    <div id="faqListContainer">
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                <span>Q1: Display change māḍida mēle guarantee ideyā?</span>
+                                <i class="fa-solid fa-chevron-down faq-icon"></i>
+                            </div>
+                            <div class="faq-answer">
+                                Haudu! Namma Bestify Mobile nalli prati Display replacement ge 3 Months Complete Guarantee iruttade.
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="otherQBtn" class="other-question-btn" onclick="openAskForm()">
+                        <i class="fa-solid fa-pen"></i> I have a doubt
+                    </button>
+
+                    <div class="ask-faq-box" id="askFormBox">
+                        <h4><i class="fa-solid fa-circle-question" style="color:#1a73e8;"></i> Ask your doubt:</h4>
+                        <input type="text" id="custNameInput" class="faq-input" placeholder="Your name...">
+                        <textarea id="custQuestionInput" class="faq-textarea" placeholder="Enadaru bareyiri..."></textarea>
+                        <button class="faq-submit-btn" onclick="submitCustomFaq()">Submit</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- --- RELATED PRODUCTS SECTION --- -->
+            <div class="preview-products-container">
+                <div class="preview-section-title">
+                    <i class="fa-solid fa-layer-group" style="color:#1a73e8;"></i> Related Products
+                </div>
+
+                <div class="preview-products-grid">
+                    <!-- Item 1 -->
+                    <div class="preview-card" onclick="openProductPage('OneNord Pro 5G', '₹29,999', '₹39,999', 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400', 'Brand: OnePlus | 12GB RAM', 'onenord-pro-5g')">
+                        <div class="preview-img-box">
+                            <span class="preview-badge">25% OFF</span>
+                            <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400" alt="OneNord Pro" class="preview-img">
+                        </div>
+                        <div class="preview-card-body">
+                            <div class="preview-item-title">OneNord Pro 5G</div>
+                            <div class="preview-item-brand">Brand: OnePlus | 12GB RAM</div>
+                            <div class="preview-price-row">
+                                <span class="preview-old-price">₹39,999</span>
+                                <span class="preview-new-price">₹29,999</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="preview-card" onclick="openProductPage('Redmi Speed Max', '₹14,999', '₹19,999', 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400', 'Brand: Xiaomi | 6000mAh', 'redmi-speed-max')">
+                        <div class="preview-img-box">
+                            <span class="preview-badge">25% OFF</span>
+                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400" alt="Redmi Speed" class="preview-img">
+                        </div>
+                        <div class="preview-card-body">
+                            <div class="preview-item-title">Redmi Speed Max</div>
+                            <div class="preview-item-brand">Brand: Xiaomi | 6000mAh</div>
+                            <div class="preview-price-row">
+                                <span class="preview-old-price">₹19,999</span>
+                                <span class="preview-new-price">₹14,999</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="preview-card" onclick="openProductPage('Boom Sound Box 10W', '₹899', '₹2,499', 'https://images.unsplash.com/photo-1545454675-3531b543be5d?w=400', 'Brand: JBL | Bass Plus', 'boom-sound-box')">
+                        <div class="preview-img-box">
+                            <span class="preview-badge">64% OFF</span>
+                            <img src="https://images.unsplash.com/photo-1545454675-3531b543be5d?w=400" alt="Boom Sound" class="preview-img">
+                        </div>
+                        <div class="preview-card-body">
+                            <div class="preview-item-title">Boom Sound Box 10W</div>
+                            <div class="preview-item-brand">Brand: JBL | Bass Plus</div>
+                            <div class="preview-price-row">
+                                <span class="preview-old-price">₹2,499</span>
+                                <span class="preview-new-price">₹899</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="preview-card" onclick="openProductPage('RGB Party Speaker', '₹1,499', '₹3,999', 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400', 'Brand: boAt | Wireless', 'rgb-party-speaker')">
+                        <div class="preview-img-box">
+                            <span class="preview-badge">62% OFF</span>
+                            <img src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400" alt="RGB Speaker" class="preview-img">
+                        </div>
+                        <div class="preview-card-body">
+                            <div class="preview-item-title">RGB Party Speaker ..</div>
+                            <div class="preview-item-brand">Brand: boAt | Wireless</div>
+                            <div class="preview-price-row">
+                                <span class="preview-old-price">₹3,999</span>
+                                <span class="preview-new-price">₹1,499</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 -->
+                    <div class="preview-card" onclick="openProductPage('Pocket Mini Speaker', '₹599', '₹1,499', 'https://images.unsplash.com/photo-1589003077984-894e133dabab?w=400', 'Brand: Sony | Waterproof', 'pocket-mini-speaker')">
+                        <div class="preview-img-box">
+                            <span class="preview-badge">60% OFF</span>
+                            <img src="https://images.unsplash.com/photo-1589003077984-894e133dabab?w=400" alt="Pocket Speaker" class="preview-img">
+                        </div>
+                        <div class="preview-card-body">
+                            <div class="preview-item-title">Pocket Mini Speaker</div>
+                            <div class="preview-item-brand">Brand: Sony | Waterproof</div>
+                            <div class="preview-price-row">
+                                <span class="preview-old-price">₹1,499</span>
+                                <span class="preview-new-price">₹599</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="preview-card" onclick="openProductPage('Smart Watch Pro 2', '₹1,299', '₹4,999', 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400', 'Brand: Noise | HD Display', 'smart-watch-pro')">
+                        <div class="preview-img-box">
+                            <span class="preview-badge">74% OFF</span>
+                            <img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400" alt="Smart Watch" class="preview-img">
+                        </div>
+                        <div class="preview-card-body">
+                            <div class="preview-item-title">Smart Watch Pro 2</div>
+                            <div class="preview-item-brand">Brand: Noise | HD Display</div>
+                            <div class="preview-price-row">
+                                <span class="preview-old-price">₹4,999</span>
+                                <span class="preview-new-price">₹1,299</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Footer Buttons -->
+        <footer class="action-footer">
+            <button class="btn-cart"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</button>
+            <button class="btn-buy"><i class="fa-solid fa-bolt"></i> Buy Now</button>
+        </footer>
+    </div>
+
+    <!-- Modal Popup -->
+    <div class="modal-overlay" id="policyModal">
+        <div class="modal-card">
+            <div class="modal-title" id="modalTitle">Policy Details</div>
+            <div class="modal-body" id="modalBody">Description text goes here...</div>
+            <button class="modal-close-btn" onclick="closeModal()">OK, Understood</button>
+        </div>
+    </div>
+
+    <!-- JavaScript Navigation -->
+    <script>
+        const productHistory = [];
+
+        function openProductPage(title, price, origPrice, imgSrc, brandText, slug) {
+            // Save current product state to history stack
+            const currentState = {
+                title: document.getElementById('mainProductTitle').innerText,
+                price: document.getElementById('displayPrice').innerText,
+                origPrice: document.getElementById('displayOriginalPrice').innerText,
+                imgSrc: document.getElementById('mainProductImg').src,
+                brand: document.getElementById('mainBrandName').innerText
+            };
+            productHistory.push(currentState);
+
+            // Change browser URL hash for real page push feel
+            window.location.hash = slug || 'product-details';
+
+            executePageTransition(title, price, origPrice, imgSrc, brandText, 'forward');
+        }
+
+        function executePageTransition(title, price, origPrice, imgSrc, brandText, direction) {
+            const loader = document.getElementById('topLoader');
+            const mainContent = document.getElementById('mainScrollContent');
+
+            loader.className = 'top-loader loading';
+            const animClass = direction === 'forward' ? 'page-slide-forward' : 'page-slide-backward';
+            
+            mainContent.classList.add(animClass);
+
+            setTimeout(() => {
+                // Update Content
+                document.getElementById('mainProductTitle').innerText = title;
+                document.getElementById('displayPrice').innerText = price;
+                document.getElementById('displayOriginalPrice').innerText = origPrice;
+                document.getElementById('mainProductImg').src = imgSrc;
+                document.getElementById('thumb1').src = imgSrc;
+
+                if (brandText) {
+                    document.getElementById('mainBrandName').innerText = brandText.split('|')[0].replace('Brand:', '').trim().toUpperCase();
+                }
+
+                // Scroll to top instantly
+                mainContent.scrollTop = 0;
+
+                loader.className = 'top-loader finish';
+                
+                setTimeout(() => {
+                    mainContent.classList.remove(animClass);
+                    loader.className = 'top-loader';
+                }, 350);
+
+            }, 180);
+        }
+
+        function goBackPage() {
+            if (productHistory.length > 0) {
+                const prev = productHistory.pop();
+                executePageTransition(prev.title, prev.price, prev.origPrice, prev.imgSrc, prev.brand, 'backward');
+            } else {
+                alert("Home / Initial page alle iddeera!");
+            }
+        }
+
+        // Handle Browser Back Button Event
+        window.onpopstate = function() {
+            if (productHistory.length > 0) {
+                goBackPage();
+            }
+        };
+
+        const reviewsTickerData = [
+            'Anand K: "Best price and 3 months guarantee. Very..."',
+            'Mahesh yaragatti: "Wow super 💥 power full power bank tq..."',
+            'Praveen Kumar: "Display change madide, free neckband gift sikktu!"',
+            'Sneha Patil: "Original combo display, touch response super agide."'
+        ];
+
+        let tickerIndex = 0;
+        setInterval(() => {
+            tickerIndex = (tickerIndex + 1) % reviewsTickerData.length;
+            const tickerElem = document.getElementById('tickerText');
+            if(tickerElem) {
+                tickerElem.innerText = reviewsTickerData[tickerIndex];
+            }
+        }, 2500);
+
+        function toggleReviewsSection() {
+            document.getElementById('reviewsSection').classList.toggle('open');
+        }
+
+        function toggleCustomFaqBox() {
+            document.getElementById('customFaqWrapper').classList.toggle('open');
+        }
+
+        function toggleProductDetails() {
+            document.getElementById('detailsBox').classList.toggle('open');
+        }
+
+        function changeImage(src, element) {
+            document.getElementById('mainProductImg').src = src;
+            document.querySelectorAll('.thumb-card').forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function selectVariant(colorName, price, originalPrice, imgSrc, element) {
+            document.getElementById('displayPrice').innerText = price;
+            document.getElementById('displayOriginalPrice').innerText = originalPrice;
+            document.getElementById('mainProductImg').src = imgSrc;
+
+            document.querySelectorAll('.color-img-card').forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function showModal(type) {
+            const modal = document.getElementById('policyModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+
+            if (type === 'guarantee') {
+                title.innerHTML = '<i class="fa-solid fa-shield-halved"></i> 3 Months Guarantee';
+                body.innerText = "Display replacement athava product ge 3 mahinegala purna warranty/guarantee iruttade.";
+            } else if (type === 'return') {
+                title.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> 7 Days Return (Only Exchange)';
+                body.innerText = "Product tagondida 7 dinagaḷa olage image/model mismatch iddre matra exchange mādabahudu.";
+            } else if (type === 'charges') {
+                title.innerHTML = '<i class="fa-solid fa-truck-ramp-box"></i> ₹50 Return Charge';
+                body.innerText = "Exchange or return service ge ₹50 delivery pickup & re-shipping charge anwayisuttade.";
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('policyModal').style.display = 'none';
+        }
+
+        function toggleFaq(element) {
+            element.classList.toggle('active');
+        }
+
+        function openAskForm() {
+            document.getElementById('askFormBox').style.display = 'block';
+            document.getElementById('otherQBtn').style.display = 'none';
+        }
+
+        function submitCustomFaq() {
+            const name = document.getElementById('custNameInput').value.trim();
+            const question = document.getElementById('custQuestionInput').value.trim();
+
+            if (!name || !question) {
+                alert("Dayavittu Hesaru (Name) mattu Doubt (Question) erta bariri!");
+                return;
+            }
+
+            const container = document.getElementById('faqListContainer');
+            const newCount = container.children.length + 1;
+
+            const newItem = document.createElement('div');
+            newItem.className = 'faq-item';
+            newItem.setAttribute('onclick', 'toggleFaq(this)');
+            newItem.innerHTML = `
+                <div class="faq-question">
+                    <span>Q${newCount}: ${question} (${name})</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </div>
+                <div class="faq-answer">
+                    Thank you ${name}! Namma Bestify Mobile team bega neevu keltairuva prashnege uttara tilisuttare. (Admin Reply Pending)
+                </div>
+            `;
+
+            container.appendChild(newItem);
+
+            document.getElementById('askFormBox').style.display = 'none';
+            document.getElementById('otherQBtn').style.display = 'block';
+            document.getElementById('custNameInput').value = '';
+            document.getElementById('custQuestionInput').value = '';
+
+            alert("Your doubt has been submitted successfully!");
+        }
+
+        function shareProduct() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Bestify Mobile - Offer',
+                    text: 'Check out Bestify Mobile display replacement & color options!',
+                    url: window.location.href,
+                }).catch(console.error);
+            } else {
+                alert("Product link copied!");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bestify Mobile - Full Admin Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body { background: #f1f5f9; color: #0f172a; padding-bottom: 40px; }
+
+    /* Top Header & Categories */
+    .top-header { background: #0f172a; color: #fff; padding: 16px; text-align: center; position: sticky; top: 0; z-index: 20; }
+    .top-header h1 { font-size: 20px; color: #38bdf8; }
+    
+    .category-section { background: #fff; padding: 12px 10px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 60px; z-index: 15; }
+    .category-wrapper { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+    .category-wrapper::-webkit-scrollbar { display: none; }
+    .cat-pill { background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+    .cat-pill.active { background: #0284c7; color: #fff; border-color: #0284c7; }
+    .cat-pill .count-badge { background: #e2e8f0; color: #475569; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .cat-pill.active .count-badge { background: #fff; color: #0284c7; }
+
+    .result-info { max-width: 600px; margin: 12px auto 0; padding: 0 12px; font-size: 13px; color: #64748b; font-weight: 600; }
+    .result-info span { color: #0f172a; font-weight: 800; font-size: 14px; }
+
+    /* Product Cards Container */
+    .container { max-width: 600px; margin: 10px auto; padding: 0 12px; display: flex; flex-direction: column; gap: 12px; }
+    
+    .product-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; display: flex; gap: 12px; align-items: center; cursor: pointer; transition: 0.2s; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .product-card:active { transform: scale(0.98); }
+    
+    /* Add New Card */
+    .add-new-card { border: 2px dashed #94a3b8; background: #f8fafc; justify-content: flex-start; }
+    .add-new-card:hover { border-color: #0284c7; background: #f1f5f9; }
+    .add-icon { width: 60px; height: 60px; background: #e0f2fe; color: #0284c7; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+
+    .status-dot { position: absolute; top: 10px; left: 10px; width: 12px; height: 12px; border-radius: 50%; background: #22c55e; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .status-dot.hidden { background: #ef4444; }
+
+    .img-box { width: 75px; height: 75px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; flex-shrink: 0; }
+    .img-box img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .details { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .product-title { font-size: 14.5px; font-weight: 700; color: #0f172a; line-height: 1.3; }
+    
+    .price-row { display: flex; align-items: center; gap: 8px; }
+    .mrp { font-size: 12px; color: #94a3b8; text-decoration: line-through; }
+    .price { font-size: 16px; font-weight: 800; color: #16a34a; }
+    .discount-badge { font-size: 10px; background: #fee2e2; color: #ef4444; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    
+    .bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+    .sku-badge { font-size: 11px; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 6px; font-weight: 600; color: #475569; }
+
+    /* Modal Styles */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 999; justify-content: center; align-items: flex-end; backdrop-filter: blur(2px); }
+    .modal-content { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 24px; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); max-height: 90vh; overflow-y: auto; }
+    @media (min-width: 600px) { .modal-overlay { align-items: center; } .modal-content { border-radius: 16px; max-height: 85vh; } }
+    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+    .modal-header h2 { font-size: 18px; color: #0f172a; }
+    .close-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; cursor: pointer; color: #64748b; }
+
+    /* Form Fields & Directory */
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 12px; color: #475569; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
+    .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: #f8fafc; outline: none; }
+    .form-group input:focus, .form-group select:focus { border-color: #38bdf8; background: #fff; }
+    
+    .directory-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+    .add-dir-btn { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    .dir-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .dir-row input { padding: 10px; font-size: 13px; }
+    .remove-dir-btn { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; width: 40px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    /* UI Toggles & Images */
+    .image-grid { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; }
+    .img-preview { width: 75px; height: 75px; border-radius: 10px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #94a3b8; background: #f8fafc; cursor: pointer; flex-shrink: 0; position: relative; overflow: hidden; }
+    .img-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .delete-img-btn { position: absolute; top: 2px; right: 2px; background: rgba(239, 68, 68, 0.9); color: #fff; border: none; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; cursor: pointer; }
+
+    .toggle-wrapper { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 16px; border-radius: 10px; border: 1px solid #e2e8f0; margin: 20px 0; }
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ef4444; transition: .4s; border-radius: 26px; }
+    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #22c55e; }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    .action-btns { display: flex; gap: 12px; margin-top: 10px; }
+    .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-save { background: #0284c7; }
+    .btn-delete { background: #ef4444; flex: 0.4; }
+  </style>
+</head>
+<body>
+
+  <header class="top-header">
+    <h1>Bestify Mobile</h1>
+    <p>Advanced Inventory Admin</p>
+  </header>
+
+  <div class="category-section">
+    <div class="category-wrapper">
+      <button class="cat-pill active" data-filter="all" onclick="filterCategory('all', this)">All <span class="count-badge" id="count-all">0</span></button>
+      <button class="cat-pill" data-filter="covers" onclick="filterCategory('covers', this)">Covers <span class="count-badge" id="count-covers">0</span></button>
+      <button class="cat-pill" data-filter="glass" onclick="filterCategory('glass', this)">Glass <span class="count-badge" id="count-glass">0</span></button>
+      <button class="cat-pill" data-filter="spares" onclick="filterCategory('spares', this)">Spares <span class="count-badge" id="count-spares">0</span></button>
+      <button class="cat-pill" data-filter="accessories" onclick="filterCategory('accessories', this)">Accessories <span class="count-badge" id="count-accessories">0</span></button>
+    </div>
+  </div>
+
+  <div class="result-info">
+    Showing <span id="currentCount">0</span> Products
+  </div>
+
+  <main class="container" id="productContainer">
+    <!-- Products will be injected here by JavaScript -->
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Edit Product Details</h2>
+        <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+      </div>
+
+      <label style="font-size: 12px; color: #475569; font-weight: 700; margin-bottom: 8px; display:block;">PRODUCT IMAGES</label>
+      <div class="image-grid" id="modalImageGrid">
+        <div class="img-preview"><i class="fas fa-plus"></i></div>
+      </div>
+
+      <div class="form-group">
+        <label>Product Title</label>
+        <input type="text" id="mTitle" placeholder="Enter product name">
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select id="mCategory">
+          <option value="covers">Covers</option>
+          <option value="glass">Glass</option>
+          <option value="spares">Spares</option>
+          <option value="accessories">Accessories</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <div class="form-group" style="flex: 1;">
+          <label>MRP (₹)</label>
+          <input type="number" id="mMpr" placeholder="0">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Selling Price (₹)</label>
+          <input type="number" id="mPrice" placeholder="0">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <div class="form-group" style="flex: 1;">
+          <label>SKU ID</label>
+          <input type="text" id="mSku" placeholder="Item code">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Stock Qty</label>
+          <input type="number" id="mQty" placeholder="0">
+        </div>
+      </div>
+
+      <!-- Directory Section -->
+      <div class="directory-header">
+        <label>EXTRA DETAILS (DIRECTORY)</label>
+        <button class="add-dir-btn" onclick="addDirectoryField()"><i class="fas fa-plus"></i> Add New</button>
+      </div>
+      <div id="directoryContainer"></div>
+
+      <div class="toggle-wrapper">
+        <div style="font-size: 15px; font-weight: 600; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-eye" style="color: #64748b;"></i> Public Status
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="mStatus" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="action-btns">
+        <button class="btn btn-delete" onclick="deleteProduct()"><i class="fas fa-trash-alt"></i></button>
+        <button class="btn btn-save" onclick="saveProduct()"><i class="fas fa-save"></i> Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 20 DEMO PRODUCTS DATABASE ARRAY
+    const productsDB = [
+      // COVERS
+      { id: 1, title: "Vivo Y20 Matte Smoke Case", category: "covers", mrp: 199, price: 99, sku: "VIVO-Y20-SMK", qty: 10, isPublic: true, img: "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=150&auto=format&fit=crop", dir: [{name: "Color", value: "Black"}, {name: "Material", value: "Silicone"}] },
+      { id: 2, title: "iPhone 13 Clear Silicon Case", category: "covers", mrp: 299, price: 149, sku: "IP13-CLR", qty: 15, isPublic: true, img: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=150&auto=format&fit=crop", dir: [] },
+      { id: 3, title: "Realme 9 Pro Armor Cover", category: "covers", mrp: 350, price: 180, sku: "RLM-9P-ARM", qty: 8, isPublic: false, img: "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=150&auto=format&fit=crop", dir: [{name: "Feature", value: "Kickstand"}] },
+      { id: 4, title: "Oppo A53 Flip Leather Case", category: "covers", mrp: 499, price: 250, sku: "OPP-A53-FLP", qty: 20, isPublic: true, img: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=150&auto=format&fit=crop", dir: [{name: "Color", value: "Brown"}] },
+      { id: 5, title: "Samsung S21 Ultra Bumper Case", category: "covers", mrp: 599, price: 299, sku: "SAM-S21-BMP", qty: 5, isPublic: true, img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=150&auto=format&fit=crop", dir: [] },
+
+      // GLASS
+      { id: 6, title: "Redmi Note 10 11D Glass", category: "glass", mrp: 150, price: 80, sku: "RD-NT10-11D", qty: 25, isPublic: true, img: "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=150&auto=format&fit=crop", dir: [{name: "Type", value: "Full Edge"}] },
+      { id: 7, title: "iPhone 15 Privacy Glass", category: "glass", mrp: 399, price: 199, sku: "IP15-PRV", qty: 12, isPublic: true, img: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=150&auto=format&fit=crop", dir: [{name: "Feature", value: "Anti-Spy"}] },
+      { id: 8, title: "OnePlus 9 Curved UV Glass", category: "glass", mrp: 599, price: 299, sku: "OP9-UVG", qty: 10, isPublic: true, img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=150&auto=format&fit=crop", dir: [{name: "Warranty", value: "No Warranty"}] },
+      { id: 9, title: "Poco X3 Matte Gaming Glass", category: "glass", mrp: 199, price: 99, sku: "POCO-X3-MAT", qty: 30, isPublic: false, img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150&auto=format&fit=crop", dir: [{name: "Type", value: "Anti-Fingerprint"}] },
+      { id: 10, title: "Moto G82 Flexible Glass", category: "glass", mrp: 149, price: 70, sku: "MOT-G82-FLX", qty: 18, isPublic: true, img: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=150&auto=format&fit=crop", dir: [] },
+
+      // SPARES
+      { id: 11, title: "Vivo Y12 Folder LCD Combo", category: "spares", mrp: 1500, price: 850, sku: "VIV-Y12-LCD", qty: 6, isPublic: true, img: "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=150&auto=format&fit=crop", dir: [{name: "Warranty", value: "3 Months Checking"}] },
+      { id: 12, title: "Oppo A3s Display Folder OG", category: "spares", mrp: 1200, price: 750, sku: "OPP-A3S-LCD", qty: 4, isPublic: true, img: "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=150&auto=format&fit=crop", dir: [{name: "Quality", value: "Original (OG)"}] },
+      { id: 13, title: "Samsung M21 Super AMOLED", category: "spares", mrp: 3500, price: 1800, sku: "SAM-M21-AMO", qty: 2, isPublic: false, img: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=150&auto=format&fit=crop", dir: [{name: "Warranty", value: "6 Months"}] },
+      { id: 14, title: "Redmi 9 Power Battery BN62", category: "spares", mrp: 899, price: 450, sku: "RED-9P-BAT", qty: 15, isPublic: true, img: "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=150&auto=format&fit=crop", dir: [{name: "Capacity", value: "6000mAh"}, {name: "Warranty", value: "6 Months"}] },
+      { id: 15, title: "Realme C11 Charging CC Board", category: "spares", mrp: 250, price: 120, sku: "RLM-C11-CC", qty: 20, isPublic: true, img: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=150&auto=format&fit=crop", dir: [] },
+
+      // ACCESSORIES
+      { id: 16, title: "Bestify 20W Fast Charger PD", category: "accessories", mrp: 499, price: 299, sku: "BST-20W-PD", qty: 18, isPublic: true, img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=150&auto=format&fit=crop", dir: [{name: "Warranty", value: "1 Year"}] },
+      { id: 17, title: "Braided Type-C 65W Cable", category: "accessories", mrp: 299, price: 120, sku: "CBL-TYPC-65", qty: 35, isPublic: true, img: "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=150&auto=format&fit=crop", dir: [{name: "Length", value: "1 Meter"}] },
+      { id: 18, title: "Bass Pro 3.5mm Wired Earphone", category: "accessories", mrp: 299, price: 110, sku: "EAR-35-BSS", qty: 22, isPublic: true, img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150&auto=format&fit=crop", dir: [{name: "Mic", value: "Yes"}] },
+      { id: 19, title: "TWS Wireless Earbuds Pro", category: "accessories", mrp: 1499, price: 799, sku: "TWS-PRO-WL", qty: 8, isPublic: false, img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=150&auto=format&fit=crop", dir: [{name: "Battery", value: "24 Hours"}, {name: "Warranty", value: "6 Months"}] },
+      { id: 20, title: "Aluminum Desktop Mobile Stand", category: "accessories", mrp: 250, price: 99, sku: "STND-ALM-01", qty: 12, isPublic: true, img: "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=150&auto=format&fit=crop", dir: [{name: "Material", value: "Metal"}] }
+    ];
+
+    let currentFilter = 'all';
+    const container = document.getElementById('productContainer');
+
+    // INITIAL RENDER
+    document.addEventListener("DOMContentLoaded", () => {
+      renderProducts();
+    });
+
+    // GENERATE HTML FOR PRODUCTS
+    function renderProducts() {
+      container.innerHTML = ''; // Clear container
+
+      // 1. ALWAYS ADD 'ADD NEW PRODUCT' CARD AT TOP
+      container.innerHTML += `
+        <div class="product-card add-new-card" onclick="openAddModal()">
+          <div class="add-icon"><i class="fas fa-plus"></i></div>
+          <div class="details" style="justify-content: center;">
+            <div class="product-title" style="color: #0284c7; font-size: 16px;">Add New Product</div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Click here to add a new item</div>
+          </div>
+        </div>
+      `;
+
+      let visibleCount = 0;
+      let counts = { all: 0, covers: 0, glass: 0, spares: 0, accessories: 0 };
+
+      // 2. LOOP THROUGH DATABASE & APPEND HTML
+      productsDB.forEach(p => {
+        // Update category counts
+        counts.all++;
+        if(counts[p.category] !== undefined) counts[p.category]++;
+
+        // Filter Logic
+        if (currentFilter === 'all' || p.category === currentFilter) {
+          visibleCount++;
+          
+          let discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
+          let dotClass = p.isPublic ? 'status-dot' : 'status-dot hidden';
+          
+          // Pass full object safely to modal using JSON string
+          let productDataStr = encodeURIComponent(JSON.stringify(p));
+
+          container.innerHTML += `
+            <div class="product-card" onclick="openEditModal('${productDataStr}')">
+              <div class="${dotClass}"></div>
+              <div class="img-box"><img src="${p.img}" alt="${p.title}"></div>
+              <div class="details">
+                <div class="product-title">${p.title}</div>
+                <div class="price-row">
+                  <span class="price">₹${p.price}</span>
+                  <span class="mrp">₹${p.mrp}</span>
+                  <span class="discount-badge">${discount}% OFF</span>
+                </div>
+                <div class="bottom-row">
+                  <span class="sku-badge">SKU: ${p.sku}</span>
+                  <span style="font-size: 12px; font-weight: bold; color: #0284c7;">Qty: ${p.qty}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      // 3. UPDATE COUNTERS ON SCREEN
+      document.getElementById('currentCount').innerText = visibleCount;
+      document.getElementById('count-all').innerText = counts.all;
+      document.getElementById('count-covers').innerText = counts.covers;
+      document.getElementById('count-glass').innerText = counts.glass;
+      document.getElementById('count-spares').innerText = counts.spares;
+      document.getElementById('count-accessories').innerText = counts.accessories;
+    }
+
+    // CATEGORY BUTTON CLICK
+    function filterCategory(cat, btn) {
+      document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = cat;
+      renderProducts(); // Re-render lists
+    }
+
+    // MODAL LOGIC
+    const modal = document.getElementById('productModal');
+
+    // ADD NEW PRODUCT MODAL
+    function openAddModal() {
+      document.getElementById('modalTitle').innerText = "Add New Product";
+      document.getElementById('mTitle').value = "";
+      document.getElementById('mCategory').value = "covers";
+      document.getElementById('mMpr').value = "";
+      document.getElementById('mPrice').value = "";
+      document.getElementById('mSku').value = "";
+      document.getElementById('mQty').value = "";
+      document.getElementById('mStatus').checked = true;
+      
+      document.getElementById('modalImageGrid').innerHTML = `<div class="img-preview"><i class="fas fa-camera"></i></div><div class="img-preview"><i class="fas fa-plus"></i></div>`;
+      document.getElementById('directoryContainer').innerHTML = ''; // Clear directory
+      
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden'; 
+    }
+
+    // EDIT PRODUCT MODAL (Receives JSON String)
+    function openEditModal(productDataStr) {
+      let p = JSON.parse(decodeURIComponent(productDataStr));
+      
+      document.getElementById('modalTitle').innerText = "Edit Product Details";
+      document.getElementById('mTitle').value = p.title;
+      document.getElementById('mCategory').value = p.category;
+      document.getElementById('mMpr').value = p.mrp;
+      document.getElementById('mPrice').value = p.price;
+      document.getElementById('mSku').value = p.sku;
+      document.getElementById('mQty').value = p.qty;
+      document.getElementById('mStatus').checked = p.isPublic;
+
+      document.getElementById('modalImageGrid').innerHTML = `
+        <div class="img-preview">
+          <img src="${p.img}">
+          <button class="delete-img-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="img-preview"><i class="fas fa-plus"></i></div>
+      `;
+      
+      // Load Directory Details Dynamically
+      const dirContainer = document.getElementById('directoryContainer');
+      dirContainer.innerHTML = '';
+      if(p.dir && p.dir.length > 0) {
+        p.dir.forEach(item => addDirectoryField(item.name, item.value));
+      }
+      
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden'; 
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto'; 
+    }
+
+    // ADD DIRECTORY FIELD
+    function addDirectoryField(name = '', value = '') {
+      const container = document.getElementById('directoryContainer');
+      const row = document.createElement('div');
+      row.className = 'dir-row';
+      row.innerHTML = `
+        <input type="text" placeholder="e.g. Warranty" value="${name}" style="flex: 1;">
+        <input type="text" placeholder="e.g. 3 Months" value="${value}" style="flex: 1;">
+        <button class="remove-dir-btn" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
+      `;
+      container.appendChild(row);
+    }
+
+    // CLOSE ON BACKGROUND CLICK
+    window.addEventListener('click', function(event) {
+      if (event.target === modal) closeModal();
+    });
+
+    // SAVE & DELETE BUTTONS
+    function saveProduct() {
+      alert("Product saved successfully!");
+      closeModal();
+    }
+    function deleteProduct() {
+      if(confirm("Are you sure you want to delete this product?")) {
+        alert("Deleted successfully.");
+        closeModal();
+      }
+    }
+  </script>
+
+</body>
+</html>

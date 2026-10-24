@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestify Mobile</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Mobile Screen Container */
+        .app-container {
+            width: 100%;
+            max-width: 412px;
+            height: 100vh;
+            max-height: 850px;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        /* Header Styles */
+        .app-header {
+            padding: 12px 16px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1a73e8;
+        }
+
+        /* Top Right Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-order-btn {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 6px rgba(255, 65, 108, 0.4);
+            animation: quickOrderPulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes quickOrderPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 65, 108, 0.7); }
+            70% { transform: scale(1.06); box-shadow: 0 0 0 8px rgba(255, 65, 108, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 65, 108, 0); }
+        }
+
+        .cart-icon-container {
+            position: relative;
+            font-size: 1.25rem;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background-color: #e53935;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 50%;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f4;
+            border-radius: 20px;
+            padding: 8px 14px;
+            margin-bottom: 8px;
+        }
+
+        .search-bar i { color: #666; margin-right: 8px; }
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        /* Delivery Location */
+        .delivery-location {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #444;
+            gap: 6px;
+            padding: 2px 0;
+        }
+
+        .delivery-location i { color: #1a73e8; }
+        .edit-icon { font-size: 0.75rem; color: #777; cursor: pointer; }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px 70px 16px;
+        }
+
+        /* Top Banner Slider */
+        .banner-slider-container {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            display: flex;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .banner-slides {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .banner-slides::-webkit-scrollbar {
+            display: none;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background-color: #1a73e8;
+            width: 18px;
+            border-radius: 4px;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 6px 4px 12px 4px;
+            margin-bottom: 12px;
+        }
+
+        .categories-section::-webkit-scrollbar { display: none; }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .category-card {
+            width: 65px;
+            height: 65px;
+            background-color: #f8f9fa;
+            border: 1.5px solid #ced4da;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .category-card img { width: 100%; height: 100%; object-fit: cover; }
+        .category-name { font-size: 0.72rem; color: #444; font-weight: 500; }
+
+        .category-item.active .category-card,
+        .category-item:hover .category-card {
+            transform: scale(1.12);
+            border-color: #1a73e8;
+            box-shadow: 0 6px 12px rgba(26, 115, 232, 0.25);
+        }
+
+        .category-item.active .category-name { color: #1a73e8; font-weight: bold; }
+
+        /* Catalog Section Header */
+        .featured-section h2 {
+            font-size: 1.15rem;
+            margin-bottom: 14px;
+            color: #222;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .catalog-count-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1a73e8;
+            background-color: #e8f0fe;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover { transform: translateY(-2px); }
+
+        .offer-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: #e53935;
+            color: #ffffff;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 4px;
+            z-index: 2;
+        }
+
+        .product-img {
+            height: 140px;
+            background-color: #f8f9fa;
+            overflow: hidden;
+        }
+
+        .product-img img { width: 100%; height: 100%; object-fit: cover; }
+        .product-details { padding: 10px 12px; }
+
+        .product-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-subtitle { font-size: 0.72rem; color: #666; margin-bottom: 6px; }
+        .price-box { display: flex; gap: 8px; align-items: center; }
+        .old-price { font-size: 0.78rem; color: #888; text-decoration: line-through; }
+        .new-price { font-size: 0.95rem; font-weight: bold; color: #28a745; }
+
+        /* --- Bottom Info Section --- */
+        .shop-info-section {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-top: 5px solid #1a73e8;
+            border-radius: 16px;
+            padding: 18px;
+            margin-top: 24px;
+            color: #333;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        .shop-info-section h3 {
+            font-size: 1.15rem;
+            color: #1a73e8;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .shop-info-section p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            color: #4a5568;
+        }
+
+        .shop-photos-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .scroll-hint {
+            font-size: 0.7rem;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        /* --- Shop Photos Gallery (Height reduced by 10% to 198px) --- */
+        .shop-photos-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 18px;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .shop-photos-scroll::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .shop-photos-scroll::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .shop-photo-card {
+            min-width: 290px;
+            height: 198px; /* 220px ninda 10% kadime madi 198px ge set madideve */
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1.5px solid #cbd5e1;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.12);
+            position: relative;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            background-color: #f8fafc;
+        }
+
+        .shop-photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.4s ease;
+        }
+
+        .shop-photo-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .photo-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.85));
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 10px 12px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Features Badges */
+        .features-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f0fe;
+            padding: 8px 10px;
+            border-radius: 8px;
+            color: #1967d2;
+        }
+
+        /* Store Location & Google Map Embed */
+        .store-details-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #475569;
+            margin-bottom: 18px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 130px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .map-link-btn {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.78rem;
+            color: #1a73e8;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        /* Social Media Links */
+        .social-section-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 6px;
+            border-radius: 8px;
+            color: #334155;
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .social-btn i { font-size: 0.95rem; }
+
+        .social-btn.btn-insta:hover { background-color: #fdf2f8; color: #db2777; border-color: #fbcfe8; }
+        .social-btn.btn-fb:hover { background-color: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+        .social-btn.btn-yt:hover { background-color: #fef2f2; color: #dc2626; border-color: #fecaca; }
+        .social-btn.btn-telegram:hover { background-color: #f0f9ff; color: #0284c7; border-color: #bae6fd; }
+        .social-btn.btn-gmap:hover { background-color: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+        .social-btn.btn-wachannel:hover { background-color: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+
+        /* Direct Action Buttons */
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .contact-btn {
+            flex: 1;
+            background-color: #25d366;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(37, 211, 102, 0.25);
+        }
+
+        .call-btn {
+            background-color: #1a73e8;
+            box-shadow: 0 2px 6px rgba(26, 115, 232, 0.25);
+        }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #ffffff;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            gap: 4px;
+        }
+
+        .nav-item i { font-size: 1.1rem; }
+        .nav-item.active, .nav-item:hover { color: #1a73e8; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Top Header -->
+        <header class="app-header">
+            <div class="header-top">
+                <h1 class="logo">Bestify mobile</h1>
+                
+                <div class="header-actions">
+                    <a href="#" class="quick-order-btn">
+                        <i class="fa-solid fa-bolt"></i> Quick Order
+                    </a>
+                    <div class="cart-icon-container">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-badge">3</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+            </div>
+
+            <!-- Delivery Location -->
+            <div class="delivery-location">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>Delivery 591344</span>
+                <i class="fa-solid fa-pen edit-icon"></i>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Banner Slider -->
+            <div class="banner-slider-container">
+                <div class="banner-slides" id="bannerSlides">
+                    <div class="slide">
+                        <img src="806903.png" alt="Bestify Banner 1">
+                    </div>
+                    <div class="slide">
+                        <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600" alt="Special Deals Banner 2">
+                    </div>
+                    <div class="slide">
+                        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600" alt="Fashion Sale Banner 3">
+                    </div>
+                </div>
+
+                <!-- Navigation Dots -->
+                <div class="slider-dots" id="bannerDots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+
+            <!-- Categories Horizontal Scroll -->
+            <section class="categories-section">
+                <div class="category-item active" onclick="filterCategory('all', this)">
+                    <div class="category-card"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150" alt="All"></div>
+                    <span class="category-name">All</span>
+                </div>
+                <div class="category-item" onclick="filterCategory('covers', this)">
+                    <div class="category-card"><img src="https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=150" alt="Covers"></div>
+                    <span class="category-name">Covers</span>
+                </div>
+                <div class="category-item" onclick="filterCategory('mobiles', this)">
+                    <div class="category-card"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150" alt="Mobiles"></div>
+                    <span class="category-name">Mobiles</span>
+                </div>
+                <div class="category-item" onclick="filterCategory('speakers', this)">
+                    <div class="category-card"><img src="https://images.unsplash.com/photo-1545454675-3531b543be5d?w=150" alt="Speakers"></div>
+                    <span class="category-name">Speakers</span>
+                </div>
+                <div class="category-item" onclick="filterCategory('watches', this)">
+                    <div class="category-card"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150" alt="Watches"></div>
+                    <span class="category-name">Watches</span>
+                </div>
+                <div class="category-item" onclick="filterCategory('laptops', this)">
+                    <div class="category-card"><img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=150" alt="Laptops"></div>
+                    <span class="category-name">Laptops</span>
+                </div>
+            </section>
+
+            <!-- Featured Section -->
+            <section class="featured-section">
+                <h2>
+                    <span>Catalog Products</span>
+                    <span class="catalog-count-badge" id="catalogBadge">Catalog Products = 20</span>
+                </h2>
+                
+                <div class="product-grid" id="productGrid">
+                    <!-- Products generated dynamically -->
+                </div>
+
+                <!-- --- Details Section --- -->
+                <div class="shop-info-section">
+                    <h3><i class="fa-solid fa-store"></i> About Bestify Mobile</h3>
+                    <p>
+                        Welcome to <strong>Bestify Mobile</strong>! ನಿಮ್ಮ ನೆಚ್ಚಿನ ಮೊಬೈಲ್ ಗ್ಯಾಜೆಟ್‌ಗಳು, ಕವರ್‌ಗಳು, ಸ್ಪೀಕರ್‌ಗಳು ಮತ್ತು ಇಲೆಕ್ಟ್ರಾನಿಕ್ಸ್ ವಸ್ತುಗಳು ಅತ್ಯಂತ ಕಡಿಮೆ ಬೆಲೆಗೆ ಇಲ್ಲಿ ಲಭ್ಯವಿವೆ.
+                    </p>
+
+                    <!-- Shop Photos (Auto + Manual Scroll) -->
+                    <div class="shop-photos-title">
+                        <span><i class="fa-solid fa-camera-retro" style="color:#1a73e8;"></i> Shop Gallery</span>
+                        <span class="scroll-hint">Swipe / Auto &rarr;</span>
+                    </div>
+                    <div class="shop-photos-scroll" id="shopPhotosScroll">
+                        <div class="shop-photo-card">
+                            <img src="806903.png" alt="Bestify Workspace">
+                            <div class="photo-caption">✨ Desk Setup & Store Owner</div>
+                        </div>
+                        <div class="shop-photo-card">
+                            <img src="https://images.unsplash.com/photo-1556740758-90de374c12ad?w=800" alt="Counter Area">
+                            <div class="photo-caption">🛍️ Main Store Counter & Billing</div>
+                        </div>
+                        <div class="shop-photo-card">
+                            <img src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=800" alt="Gadgets Display">
+                            <div class="photo-caption">📱 Premium Gadgets Showcase</div>
+                        </div>
+                        <div class="shop-photo-card">
+                            <img src="https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=800" alt="Accessories Rack">
+                            <div class="photo-caption">🎧 Mobile Covers & Accessories Collection</div>
+                        </div>
+                    </div>
+
+                    <!-- Key Benefits -->
+                    <div class="features-list">
+                        <div class="feature-item"><i class="fa-solid fa-truck-fast"></i> ತ್ವರಿತ ಡೆಲಿವರಿ</div>
+                        <div class="feature-item"><i class="fa-solid fa-shield-halved"></i> 100% ಅಸಲಿ ವಸ್ತುಗಳು</div>
+                        <div class="feature-item"><i class="fa-solid fa-tags"></i> ಭರ್ಜರಿ ಡಿಸ್ಕೌಂಟ್</div>
+                        <div class="feature-item"><i class="fa-solid fa-headset"></i> ಗ್ರಾಹಕ ಸೇವೆ</div>
+                    </div>
+
+                    <!-- Store Location & Google Map Embed -->
+                    <div class="store-details-box">
+                        <strong><i class="fa-solid fa-location-dot" style="color:#1a73e8;"></i> ವಿಳಾಸ (Store Address):</strong><br>
+                        Shop No. 42, Main Market Road,<br>
+                        Near City Center, Pincode: <strong>591344</strong><br>
+                        Karnataka, India.<br>
+                        <strong><i class="fa-regular fa-clock" style="color:#1a73e8;"></i> ಸಮಯ:</strong> ಬೆಳಿಗ್ಗೆ 9:00 - ರಾತ್ರಿ 9:00
+
+                        <div class="map-container">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3838.031580120152!2d74.83!3d15.85!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sMTXCsDUxJzAwLjAiTiA3NMK1NDknNDguMCJF!5e0!3m2!1sen!2sin!4v1600000000000" allowfullscreen="" loading="lazy"></iframe>
+                        </div>
+                        <a href="https://maps.google.com" target="_blank" class="map-link-btn">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in Google Maps App
+                        </a>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="social-section-title">
+                        <i class="fa-solid fa-hashtag" style="color:#1a73e8;"></i> Connect With Us
+                    </div>
+                    <div class="social-grid">
+                        <a href="https://instagram.com" target="_blank" class="social-btn btn-insta">
+                            <i class="fa-brands fa-instagram" style="color:#e1306c;"></i> Instagram
+                        </a>
+                        <a href="https://facebook.com" target="_blank" class="social-btn btn-fb">
+                            <i class="fa-brands fa-facebook" style="color:#1877f2;"></i> Facebook
+                        </a>
+                        <a href="https://youtube.com" target="_blank" class="social-btn btn-yt">
+                            <i class="fa-brands fa-youtube" style="color:#ff0000;"></i> YouTube
+                        </a>
+                        <a href="https://t.me" target="_blank" class="social-btn btn-telegram">
+                            <i class="fa-brands fa-telegram" style="color:#0088cc;"></i> Telegram
+                        </a>
+                        <a href="https://google.com" target="_blank" class="social-btn btn-gmap">
+                            <i class="fa-brands fa-google" style="color:#ea4335;"></i> Business
+                        </a>
+                        <a href="https://whatsapp.com" target="_blank" class="social-btn btn-wachannel">
+                            <i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> WA Channel
+                        </a>
+                    </div>
+
+                    <!-- Direct Contact Buttons -->
+                    <div class="contact-actions">
+                        <a href="https://wa.me/" class="contact-btn"><i class="fa-brands fa-whatsapp"></i> WhatsApp Order</a>
+                        <a href="tel:" class="contact-btn call-btn"><i class="fa-solid fa-phone"></i> Call Now</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active">
+                <i class="fa-solid fa-house"></i>
+                <span>home</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-table-cells-large"></i>
+                <span>categories</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-box"></i>
+                <span>my orders</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fa-solid fa-user"></i>
+                <span>account</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // 1. Top Banner Auto & Manual Scrolling
+        const bannerSlides = document.getElementById('bannerSlides');
+        const dots = document.querySelectorAll('.dot');
+        let bannerIndex = 0;
+        const totalBanners = 3;
+
+        function updateBannerDots() {
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === bannerIndex);
+            });
+        }
+
+        let bannerInterval = setInterval(() => {
+            bannerIndex = (bannerIndex + 1) % totalBanners;
+            bannerSlides.scrollTo({
+                left: bannerIndex * bannerSlides.clientWidth,
+                behavior: 'smooth'
+            });
+            updateBannerDots();
+        }, 3500);
+
+        bannerSlides.addEventListener('scroll', () => {
+            const index = Math.round(bannerSlides.scrollLeft / bannerSlides.clientWidth);
+            if (index !== bannerIndex && index >= 0 && index < totalBanners) {
+                bannerIndex = index;
+                updateBannerDots();
+            }
+        });
+
+        // 2. Shop Photos Gallery Auto & Manual Scrolling
+        const shopScroll = document.getElementById('shopPhotosScroll');
+        let shopIndex = 0;
+        const totalShopCards = shopScroll.children.length;
+
+        let shopInterval = setInterval(() => {
+            shopIndex = (shopIndex + 1) % totalShopCards;
+            shopScroll.scrollTo({
+                left: shopIndex * 302, // Card width + gap
+                behavior: 'smooth'
+            });
+        }, 3000);
+
+        // Products Data and Filtering
+        const products = [
+            { id: 1, category: 'covers', title: 'Silicone Matte Cover', subtitle: 'Model: iPhone 14 / 15', price: '₹99', oldPrice: '₹399', discount: '75% OFF', img: 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?w=400' },
+            { id: 2, category: 'covers', title: 'Armor Protection Case', subtitle: 'Model: Samsung S23/S24', price: '₹149', oldPrice: '₹499', discount: '70% OFF', img: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400' },
+            { id: 3, category: 'covers', title: 'Transparent Clear Cover', subtitle: 'Model: Redmi / Realme', price: '₹49', oldPrice: '₹199', discount: '75% OFF', img: 'https://images.unsplash.com/photo-1541877206-e0626048d0f5?w=400' },
+            { id: 4, category: 'covers', title: 'Leather Wallet Case', subtitle: 'Model: OnePlus 11/12', price: '₹199', oldPrice: '₹699', discount: '71% OFF', img: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400' },
+
+            { id: 5, category: 'mobiles', title: 'Bestify Phone X1', subtitle: 'Brand: Apple | 128GB', price: '₹49,999', oldPrice: '₹69,999', discount: '28% OFF', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400' },
+            { id: 6, category: 'mobiles', title: 'Galaxy Ultra Z', subtitle: 'Brand: Samsung | 256GB', price: '₹54,999', oldPrice: '₹79,999', discount: '31% OFF', img: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400' },
+            { id: 7, category: 'mobiles', title: 'OneNord Pro 5G', subtitle: 'Brand: OnePlus | 12GB RAM', price: '₹29,999', oldPrice: '₹39,999', discount: '25% OFF', img: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400' },
+            { id: 8, category: 'mobiles', title: 'Redmi Speed Max', subtitle: 'Brand: Xiaomi | 6000mAh', price: '₹14,999', oldPrice: '₹19,999', discount: '25% OFF', img: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=400' },
+
+            { id: 9, category: 'speakers', title: 'Boom Sound Box 10W', subtitle: 'Brand: JBL | Bass Plus', price: '₹899', oldPrice: '₹2,499', discount: '64% OFF', img: 'https://images.unsplash.com/photo-1545454675-3531b543be5d?w=400' },
+            { id: 10, category: 'speakers', title: 'RGB Party Speaker 50W', subtitle: 'Brand: boAt | Wireless', price: '₹1,499', oldPrice: '₹3,999', discount: '62% OFF', img: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400' },
+            { id: 11, category: 'speakers', title: 'Pocket Mini Speaker', subtitle: 'Brand: Sony | Waterproof', price: '₹599', oldPrice: '₹1,499', discount: '60% OFF', img: 'https://images.unsplash.com/photo-1529359744902-86b2ab9edaea?w=400' },
+
+            { id: 12, category: 'watches', title: 'Smart Watch Pro 2', subtitle: 'Brand: Noise | HD Display', price: '₹1,299', oldPrice: '₹4,999', discount: '74% OFF', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400' },
+            { id: 13, category: 'watches', title: 'Analog Classic Gold', subtitle: 'Brand: Titan | Leather', price: '₹2,199', oldPrice: '₹3,499', discount: '37% OFF', img: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=400' },
+
+            { id: 14, category: 'laptops', title: 'Ultrabook Slim i5', subtitle: 'Brand: HP | 16GB RAM', price: '₹42,999', oldPrice: '₹58,999', discount: '27% OFF', img: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400' },
+            { id: 15, category: 'laptops', title: 'Gaming Laptop RTX', subtitle: 'Brand: Asus | 512GB SSD', price: '₹58,999', oldPrice: '₹75,999', discount: '22% OFF', img: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400' }
+        ];
+
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                grid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #888; padding: 20px;">No products found in this category.</p>';
+                return;
+            }
+
+            items.forEach(p => {
+                const cardHtml = `
+                    <div class="product-card">
+                        <span class="offer-tag">${p.discount}</span>
+                        <div class="product-img"><img src="${p.img}" alt="${p.title}"></div>
+                        <div class="product-details">
+                            <p class="product-title">${p.title}</p>
+                            <p class="product-subtitle">${p.subtitle}</p>
+                            <div class="price-box">
+                                <span class="old-price">${p.oldPrice}</span>
+                                <span class="new-price">${p.price}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        function filterCategory(cat, element) {
+            document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            const filtered = (cat === 'all') ? products : products.filter(p => p.category === cat);
+            const catName = cat.toUpperCase();
+            document.getElementById('catalogBadge').innerText = `${catName} = ${filtered.length}`;
+
+            renderProducts(filtered);
+        }
+
+        function searchProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const searched = products.filter(p => 
+                p.title.toLowerCase().includes(query) || 
+                p.subtitle.toLowerCase().includes(query) ||
+                p.category.toLowerCase().includes(query)
+            );
+            renderProducts(searched);
+        }
+
+        renderProducts(products);
+    </script>
+</body>
+</html>
